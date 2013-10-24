@@ -1,5 +1,7 @@
 #Python compiled files.#
 *.pyc
+*.sublime-project
+*.sublime-workspace
 
 #VirtualEnv folder#
 py2.7
