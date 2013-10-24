@@ -1,44 +1,49 @@
 #-*- coding: utf-8 -*-
-import json, re
+import json
+import re
 from getData import wap
 from getData.models import Weather
+
+def extractIntValue(position):
+	if len(data[18]) < position or position < 7:
+		return None
+	text = data[18][position][3][2][1]
+	index = text.find('average')
+	if index == -1:
+		return None
+	else:
+		text = text[index:]
+		text = re.findall(r'\d+', text)
+    	return text[0]
 
 
 server = 'http://api.wolframalpha.com/v1/query.jsp'
 appid = 'G93PW9-9H6AJERR6A'
-input = 'weather Jorhat, India on'
+input = 'weather Jorhat, India '
 decoder = json.JSONDecoder()
 
 wae = wap.WolframAlphaEngine(appid, server)
+month = 12
+day = 24
+year = 2010
+iter = 0
+for iter in range(13):
+	year = 2001 + iter
+	print 'Results for:' + input + str(day) + '/' + str(month) + '/' + str(year)
 
-#in loop
-query = wae.CreateQuery(input + '23' + '/' + '10' + '/' + '2012')
-result = wae.PerformQuery(query)
-data = wap.WolframAlphaQueryResult(result)
-jsonResult = data.JsonResult()
-data = decoder.decode(jsonResult)
+	query = wae.CreateQuery(
+	    input + str(day) + '/' + str(month) + '/' + str(year))
+	result = wae.PerformQuery(query)
+	data = wap.WolframAlphaQueryResult(result)
+	jsonResult = data.JsonResult()
+	data = decoder.decode(jsonResult)
+	startIndex = len(data[18]) - 15
 
-temperature =  data[18][7][3][2][1]
-index = temperature.index('average')
-temperature = temperature[index:index+15]
-temperature = re.findall(r'\d+', temperature)
-print temperature[0]
-
-humidity =  data[18][11][3][2][1]
-index = humidity.index('average')
-humidity = humidity[index:index+15]
-humidity = re.findall(r'\d+', humidity)
-print humidity[0]
-
-pressure =  data[18][12][3][2][1]
-index = pressure.index('average')
-pressure = pressure[index:index+15]
-pressure = re.findall(r'\d+', pressure)
-print pressure[0]
-
-windSpeed =  data[18][13][3][2][1]
-index = windSpeed.index('average')
-windSpeed = windSpeed[index:index+15]
-windSpeed = re.findall(r'\d+', windSpeed)
-print windSpeed[0]
-#out of loop
+	temperature = extractIntValue(7)
+	print temperature
+	humidity = extractIntValue(10 + startIndex)
+	print humidity
+	pressure = extractIntValue(11 + startIndex)
+	print pressure
+	windSpeed = extractIntValue(12 + startIndex)
+	print windSpeed
