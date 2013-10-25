@@ -26,24 +26,31 @@ wae = wap.WolframAlphaEngine(appid, server)
 month = 12
 day = 24
 year = 2010
-iter = 0
-for iter in range(13):
-	year = 2001 + iter
-	print 'Results for:' + input + str(day) + '/' + str(month) + '/' + str(year)
+for year in range(2002, 2003):
+	for month in range(10, 13):
+		for day in range(1, 31):
+			if not(month == 2 and day > 28):
+				print 'Results for:' + input + str(day) + '/' + str(month) + '/' + str(year)
 
-	query = wae.CreateQuery(
-	    input + str(day) + '/' + str(month) + '/' + str(year))
-	result = wae.PerformQuery(query)
-	data = wap.WolframAlphaQueryResult(result)
-	jsonResult = data.JsonResult()
-	data = decoder.decode(jsonResult)
-	startIndex = len(data[18]) - 15
+				query = wae.CreateQuery(
+				    input + str(day) + '/' + str(month) + '/' + str(year))
+				result = wae.PerformQuery(query)
+				data = wap.WolframAlphaQueryResult(result)
+				jsonResult = data.JsonResult()
+				data = decoder.decode(jsonResult)
+				startIndex = len(data[18]) - 15
 
-	temperature = extractIntValue(7)
-	print temperature
-	humidity = extractIntValue(10 + startIndex)
-	print humidity
-	pressure = extractIntValue(11 + startIndex)
-	print pressure
-	windSpeed = extractIntValue(12 + startIndex)
-	print windSpeed
+				temperature = extractIntValue(7)
+				humidity = extractIntValue(10 + startIndex)
+				pressure = extractIntValue(11 + startIndex)
+				windSpeed = extractIntValue(12 + startIndex)
+
+				weather = Weather()
+				weather.temperature = temperature
+				weather.pressure = pressure
+				weather.humidity = humidity
+				weather.windSpeed = windSpeed
+				weather.day = day
+				weather.month = month
+				weather.year = year
+				weather.save()
