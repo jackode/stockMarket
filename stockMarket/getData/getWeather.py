@@ -26,8 +26,8 @@ wae = wap.WolframAlphaEngine(appid, server)
 month = 12
 day = 24
 year = 2010
-for year in range(2008, 2009):
-	for month in range(7, 13):
+for year in range(2012, 2013):
+	for month in range(4, 13):
 		for day in range(1, 31):
 			if not(month == 2 and day > 28):
 				print 'Results for:' + input + str(day) + '/' + str(month) + '/' + str(year)
