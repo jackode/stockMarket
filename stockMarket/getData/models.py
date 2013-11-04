@@ -21,8 +21,8 @@ class Stock(models.Model):
     day = models.SmallIntegerField()
     month = models.SmallIntegerField()
     year = models.SmallIntegerField()
-    value = models.SmallIntegerField(null=True, blank=True)
-    volume = models.IntegerField(null=True, blank=True)
+    value = models.DecimalField(null=True, blank=True, max_digits=7, decimal_places=4)
+    volume = models.DecimalField(null=True, blank=True, max_digits=13, decimal_places=4)
 
     class Meta:
         abstract = True
@@ -56,4 +56,7 @@ class dWeather(Weather):
 
 
 class ddWeather(Weather):
+    pass
+
+class Feature35(models.Model):
     pass
