@@ -2,9 +2,10 @@
 import numpy as np
 from getData.models import *
 
-db = IndianStock
-file = '../CSV Data/raw/AsianTNE.csv'
+db = TenRenStock
+file = '../CSV Data/raw/TenRen.csv'
 day, close, volume = 0, 4, 5
+open, low, high, adj = 1, 2, 3, 6
 
 data = np.genfromtxt(file, delimiter=';', dtype=None, names=True)
 
@@ -15,5 +16,9 @@ for row in data:
     entry.month = float(date[1])
     entry.year = float(date[0])
     entry.volume = float(row[volume])
-    entry.value = float(row[close])
+    entry.close = float(row[close])
+    entry.open = float(row[open])
+    entry.low = float(row[low])
+    entry.high = float(row[high])
+    entry.adj = float(row[adj])
     entry.save()
