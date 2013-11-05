@@ -18,8 +18,6 @@ class Feature(models.Model):
         null=True, blank=True, max_digits=13, decimal_places=4)
     priceVolumeTrend = models.DecimalField(
         null=True, blank=True, max_digits=13, decimal_places=4)
-    movAveragesSimple = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
     movAverageExp = models.DecimalField(
         null=True, blank=True, max_digits=13, decimal_places=4)
     paraSar = models.DecimalField(
