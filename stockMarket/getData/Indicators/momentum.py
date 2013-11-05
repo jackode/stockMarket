@@ -10,7 +10,7 @@ N = 14
 day, month, year, open, close, low, high, adj, volume = 1, 2, 3, 4, 5, 6, 7, 8, 9
 i = 0
 previousEMA = 0.0
-extremePoint = previousSar = previousAF = previousADL = 0.0
+extremePoint = previousSar = previousAF = previousADL = Low = High = 0.0
 
 # Testing only:
 # Also, CHANGE DIANA WITH TYROON !
@@ -46,9 +46,10 @@ for t in tyroon:
         entry.day10disparity = (t[close] / temp) * 100
 
     if i >= N:
-        Low = np.amin(tyroon[i - N:i, close])
-        High = np.amax(tyroon[i - N:i, close])
-
+        if i % 14 == 0:
+            Low = np.amin(tyroon[i - N:i, close])
+            High = np.amax(tyroon[i - N:i, close])
+            
         #Momentum:
         entry.momentum = (t[close] / tyroon[i - N][close]) * 100
 
@@ -62,9 +63,6 @@ for t in tyroon:
                 0.02 if (previousAF + 0.02) <= 0.2 else 0.2
         if i == 0:
             previousSar = t[low]
-        else:
-            previousSar = previousSar + \
-                previousAF * (extremePoint - previousSar)
         entry.paraSar = previousSar
 
         # Accumulation Distribution Line:
@@ -72,6 +70,13 @@ for t in tyroon:
         mFlowVolume = mFlowMultplier * sp.sum(tyroon[i -N:i, volume])
         previousADL = previousADL + mFlowVolume
         entry.accDistrLine = previousADL
+
+
+        #updating the time period:
+        if i % 14 == 0:
+            previousADL = previousADL + mFlowVolume
+            previousSar = previousSar + \
+                previousAF * (extremePoint - previousSar)
 
 
     entry.save()
