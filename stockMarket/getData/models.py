@@ -8,68 +8,68 @@ class Feature(models.Model):
     day = models.SmallIntegerField()
     month = models.SmallIntegerField()
     year = models.SmallIntegerField()
-    momentum = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    day5disparity = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    day10disparity = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    stochK = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    priceVolumeTrend = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    movAverageExp = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    paraSar = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    accDistrLine = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    avTrueRange = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    indicB = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    commChanIndex = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    chaikinMF = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    detrPriceOsc = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    easeMove = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    forceIndex = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    macd = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    monneyFI = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    negVolIndex = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    percVolOsc = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    priceRelWarrent = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    priceRelAsian = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    priceRelDiana = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    priceRelTenren = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    rateChange = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    relStrengthI = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    slope = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    stdDev = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    stochOsc = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    stochRSI = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    ultimateOsc = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    williamR = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
+    momentum = models.FloatField(
+        null=True, blank=True)
+    day5disparity = models.FloatField(
+        null=True, blank=True)
+    day10disparity = models.FloatField(
+        null=True, blank=True)
+    stochK = models.FloatField(
+        null=True, blank=True)
+    priceVolumeTrend = models.FloatField(
+        null=True, blank=True)
+    movAverageExp = models.FloatField(
+        null=True, blank=True)
+    paraSar = models.FloatField(
+        null=True, blank=True)
+    accDistrLine = models.FloatField(
+        null=True, blank=True)
+    avTrueRange = models.FloatField(
+        null=True, blank=True)
+    indicB = models.FloatField(
+        null=True, blank=True)
+    commChanIndex = models.FloatField(
+        null=True, blank=True)
+    chaikinMF = models.FloatField(
+        null=True, blank=True)
+    detrPriceOsc = models.FloatField(
+        null=True, blank=True)
+    easeMove = models.FloatField(
+        null=True, blank=True)
+    forceIndex = models.FloatField(
+        null=True, blank=True)
+    macd = models.FloatField(
+        null=True, blank=True)
+    monneyFI = models.FloatField(
+        null=True, blank=True)
+    negVolIndex = models.FloatField(
+        null=True, blank=True)
+    percVolOsc = models.FloatField(
+        null=True, blank=True)
+    priceRelWarrent = models.FloatField(
+        null=True, blank=True)
+    priceRelAsian = models.FloatField(
+        null=True, blank=True)
+    priceRelDiana = models.FloatField(
+        null=True, blank=True)
+    priceRelTenren = models.FloatField(
+        null=True, blank=True)
+    rateChange = models.FloatField(
+        null=True, blank=True)
+    relStrengthI = models.FloatField(
+        null=True, blank=True)
+    slope = models.FloatField(
+        null=True, blank=True)
+    stdDev = models.FloatField(
+        null=True, blank=True)
+    stochOsc = models.FloatField(
+        null=True, blank=True)
+    stochRSI = models.FloatField(
+        null=True, blank=True)
+    ultimateOsc = models.FloatField(
+        null=True, blank=True)
+    williamR = models.FloatField(
+        null=True, blank=True)
 
     def __unicode__(self):
         return u'' + str(self.day) + '/' + str(self.month) + '/' + str(self.year)
