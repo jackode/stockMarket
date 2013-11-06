@@ -2,6 +2,7 @@
 from getData.models import *
 import scipy as sp
 import numpy as np
+import pdb
 
 # db = TyroonStock
 # tyroon = db.objects.all()
@@ -10,18 +11,21 @@ N = 14
 day, month, year, open, close, low, high, adj, volume = 1, 2, 3, 4, 5, 6, 7, 8, 9
 i = 0
 previousEMA = 0.0
-previousLow = previousHigh = extremePoint = previousSar = previousAF = previousATR = previousADL = Low = High = 0.0
+volNEMA = vol2NEMA = previousLow = previousHigh = extremePoint = previousSar = previousAF = previousATR = previousADL = Low = High = 0.0
+cumulativeNVI = 1000
+previousAG = previousAL = 1
 
 # Testing only:
 # Also, CHANGE DIANA WITH TYROON !
 tyroon = tyroon[:50]
 #
 
+
 def mean_abs_dev(pop):
-    alksjdhfalksd = float ( len (pop))
-    alskdjfhladsasdfjasf  = sum (pop) / alksjdhfalksd
-    qewrnqwerqnwer = [ abs (x - alskdjfhladsasdfjasf ) for x in pop ]
-    return sum (qewrnqwerqnwer) / alksjdhfalksd
+    alksjdhfalksd = float(len(pop))
+    alskdjfhladsasdfjasf = sum(pop) / alksjdhfalksd
+    qewrnqwerqnwer = [abs(x - alskdjfhladsasdfjasf) for x in pop]
+    return sum(qewrnqwerqnwer) / alksjdhfalksd
 
 
 tyroon = tyroon[::-1]
@@ -34,8 +38,35 @@ for t in tyroon:
     if i % N == 0:
         previousLow = Low
         previousHigh = High
-        Low = np.amin(tyroon[i - N:i, close]) if i != 0 else 0
-        High = np.amax(tyroon[i - N:i, close]) if i != 0 else 0
+        Low = np.amin(tyroon[i - N:i+1, close]) if i != 0 else 0
+        High = np.amax(tyroon[i - N:i+1, close]) if i != 0 else 0
+        if i != 0 :
+            previousAG = np.average(filter(None, [obj > tyroon[i-N, close] and obj for obj in tyroon[i-N:i+1, close]]))/N if i == N else ((N-1)*previousAG + np.average(filter(None, [obj > tyroon[i-N, close] and obj for obj in tyroon[i-N:i+1, close]])))/N
+            previousAL = np.average(filter(None, [obj < tyroon[i-N, close] and obj for obj in tyroon[i-N:i+1, close]]))/N if i == N else ((N-1)*previousAG + np.average(filter(None, [obj < tyroon[i-N, close] and obj for obj in tyroon[i-N:i+1, close]])))/N
+
+    #Relative Strength Index:
+    entry.relStrengthI = 100 - (100/(1 + (previousAG/previousAL)))
+
+    #Price Relative for each Concurrent:
+    try:
+        entry.priceRelDiana = t[close]/DianaStock.objects.get(day=t[day], month=t[month], year=t[year]).close
+    except: 
+        entry.priceRelDiana = 0
+
+    try:
+        entry.priceRelWarrent = t[close]/WarrentStock.objects.get(day=t[day], month=t[month], year=t[year]).close
+    except: 
+        entry.priceRelWarrent = 0
+
+    try:
+        entry.priceRelTenren = t[close]/TenRenStock.objects.get(day=t[day], month=t[month], year=t[year]).close
+    except: 
+        entry.priceRelTenren = 0
+
+    try:
+        entry.priceRelAsian = t[close]/IndianStock.objects.get(day=t[day], month=t[month], year=t[year]).close
+    except: 
+        entry.priceRelAsian = 0
 
     # Exponential Moving Average:
     smoothing = 2.0 / 11.0
@@ -47,14 +78,27 @@ for t in tyroon:
     entry.indicB = (t[close] - t[low]) / divider
 
     if i >= 1:
-        #Ease of Movement
+        #William %R:
+        if np.amax(tyroon[0:i+1, close]) != np.amin(tyroon[0:i+1, close]) :
+            entry.williamR = -100*(np.amax(tyroon[0:i+1, close]) - t[close])/(np.amax(tyroon[0:i+1, close]) - np.amin(tyroon[0:i+1, close]))
+        else:
+            entry.williamR = 0
+        
+        # Ease of Movement
         if High != 0 and Low != 0 and t[volume] != 0:
-            entry.easeMove = ((High + Low)/2 - (previousHigh + previousLow)/2) / ((t[volume]/100000)/(High - Low))
+            entry.easeMove = ((High + Low) / 2 - (previousHigh + previousLow) / 2) / \
+                ((t[volume] / 100000) / (High - Low))
         else:
             entry.easeMove = 0
 
-        #Force Index
-        entry.forceIndex = (t[close] - tyroon[i-1, close]) * t[volume]
+        # Negative Volume Index
+        if tyroon[i - 1, close] > t[close]:
+            cumulativeNVI = cumulativeNVI + \
+                ((tyroon[i - 1, close] - t[close]) / t[close])
+        entry.negVolIndex = cumulativeNVI 
+
+        # Force Index
+        entry.forceIndex = (t[close] - tyroon[i - 1, close]) * t[volume]
 
         # Price Volume Trend:
         entry.priceVolumeTrend = t[
@@ -71,38 +115,43 @@ for t in tyroon:
         entry.day10disparity = (t[close] / temp) * 100
 
         #MACD (Custom)
-        entry.macd = entry.day5disparity - entry.day5disparity - entry.movAverageExp
+        entry.macd = entry.day5disparity - \
+            entry.day5disparity - entry.movAverageExp
 
-        #Comodity Channel Index:
+        # Comodity Channel Index:
         typical = (High + Low + t[close]) / 3
-        meanDeviation = mean_abs_dev(tyroon[i-10:i, close])
-        entry.commChanIndex = (typical - entry.day10disparity) / (0.015 * meanDeviation)
-
+        meanDeviation = mean_abs_dev(tyroon[i - 10:i+1, close])
+        entry.commChanIndex = (
+            typical - entry.day10disparity) / (0.015 * meanDeviation)
 
     if i >= N:
+        #Rate of Change:
+        entry.rateChange = 100 * (t[close] - tyroon[i-N, close]) / tyroon[i-N, close]
 
-        #Money Flow Index
+        # Money Flow Index
         negMFlow = []
         posMFlow = []
-        for j in xrange(N-1):
-            if tyroon[i-N+j, close] > tyroon[i-N+j+1, close]:
-                negMFlow.append(tyroon[i-N+j+1])
+        for j in xrange(N - 1):
+            if tyroon[i - N + j, close] > tyroon[i - N + j + 1, close]:
+                negMFlow.append(tyroon[i - N + j + 1])
             else:
-                posMFlow.append(tyroon[i-N+j+1])
+                posMFlow.append(tyroon[i - N + j + 1])
         negMFlow = np.asarray(negMFlow)
         posMFlow = np.asarray(posMFlow)
-        negMFlow = sp.sum(negMFlow[:, volume])*(np.average(negMFlow[:, close]) + High + Low)/3 + 1
-        posMFlow = sp.sum(posMFlow[:, volume])*(np.average(posMFlow[:, close]) + High + Low)/3 + 1
-        mFlowRatio = posMFlow/negMFlow
-        entry.monneyFI = 100 - (100/(1 + mFlowRatio))
+        negMFlow = sp.sum(negMFlow[:, volume]) * (
+            np.average(negMFlow[:, close]) + High + Low) / 3 + 1
+        posMFlow = sp.sum(posMFlow[:, volume]) * (
+            np.average(posMFlow[:, close]) + High + Low) / 3 + 1
+        mFlowRatio = posMFlow / negMFlow
+        entry.monneyFI = 100 - (100 / (1 + mFlowRatio))
 
-        #Momentum:
+        # Momentum:
         entry.momentum = (t[close] / tyroon[i - N][close]) * 100
 
         #Stochastik % K
         entry.stochK = 100 * (t[close] - Low) / (High - Low)
 
-        #Parabolic SAR
+        # Parabolic SAR
         if extremePoint < np.amax(tyroon[i - N, high]):
             extremePoint = np.amax(tyroon[i - N, high])
             previousAF = previousAF + \
@@ -113,28 +162,34 @@ for t in tyroon:
 
         # Accumulation Distribution Line:
         mFlowMultplier = ((t[close] - Low) - (High - t[close])) / (High - Low)
-        mFlowVolume = mFlowMultplier * sp.sum(tyroon[i-N:i, volume])
+        mFlowVolume = mFlowMultplier * sp.sum(tyroon[i - N:i+1, volume])
         entry.accDistrLine = previousADL
 
-        #Chaikin Money Flow:
+        # Chaikin Money Flow:
         mFlowVolume = mFlowMultplier * t[volume]
-        entry.chaikinMF = mFlowVolume / sp.sum(tyroon[i-N:i, volume])
+        entry.chaikinMF = mFlowVolume / sp.sum(tyroon[i - N:i+1, volume])
 
-        #Detrended Price Oscillator
-        entry.detrPriceOsc = tyroon[i - ((N/2)+1), close] - entry.day10disparity
+        # Detrended Price Oscillator
+        entry.detrPriceOsc = tyroon[
+            i - ((N / 2) + 1), close] - entry.day10disparity
 
-        #Average True Range:
-        trueRange = max(High - Low, High - tyroon[i-1, close], Low - tyroon[i-1, close])
+        # Average True Range:
+        trueRange = max(High - Low, High - tyroon[
+                        i - 1, close], Low - tyroon[i - 1, close])
         entry.avTrueRange = previousATR
 
-
-        #updating the time period:
+        # updating the time period:
         if i % N == 0:
-            previousATR = ((previousATR * 13) + trueRange)/14
+            previousATR = ((previousATR * 13) + trueRange) / 14
             previousADL = previousADL + mFlowVolume
             previousSar = previousSar + \
                 previousAF * (extremePoint - previousSar)
 
+    if i >= 2*N:
+        #Percent Volume Oscillator:
+        volNEMA = volNEMA + smoothing*(np.average(tyroon[i-N:i+1, volume]) - volNEMA)
+        vol2NEMA = vol2NEMA + smoothing*(np.average(tyroon[i-(2*N):i, volume]) - vol2NEMA)
+        entry.percVolOsc = 100 * (volNEMA - vol2NEMA)/vol2NEMA
 
     entry.save()
     i = i + 1
