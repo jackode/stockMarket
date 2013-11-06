@@ -66,13 +66,9 @@ class Feature(models.Model):
         null=True, blank=True, max_digits=13, decimal_places=4)
     stochRSI = models.DecimalField(
         null=True, blank=True, max_digits=13, decimal_places=4)
-    trueStrengthI = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
     ultimateOsc = models.DecimalField(
         null=True, blank=True, max_digits=13, decimal_places=4)
     williamR = models.DecimalField(
-        null=True, blank=True, max_digits=13, decimal_places=4)
-    volIndex = models.DecimalField(
         null=True, blank=True, max_digits=13, decimal_places=4)
 
     def __unicode__(self):
