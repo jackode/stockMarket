@@ -4,7 +4,7 @@ import scipy as sp
 import numpy as np
 import pdb
 
-tyroon = sp.genfromtxt('../CSV Data/dbDump/stock_tyroon.csv', delimiter=';')
+tyroon = sp.genfromtxt('../CSV Data/dbDump/stock_indian.csv', delimiter=';')
 N = 14
 day, month, year, open, close, low, high, adj, volume = 1, 2, 3, 4, 5, 6, 7, 8, 9
 i = 0
@@ -22,7 +22,7 @@ def mean_abs_dev(pop):
     qewrnqwerqnwer = [abs(x - alskdjfhladsasdfjasf) for x in pop]
     return sum(qewrnqwerqnwer) / alksjdhfalksd
 
-tyroon = tyroon[:50]
+# tyroon = tyroon[:50]
 tyroon = tyroon[::-1]
 for t in tyroon:
     entry = Feature35(
@@ -82,7 +82,7 @@ for t in tyroon:
 
     try:
         entry.priceRelAsian = t[close] / float(
-            IndianStock.objects.get(day=t[day], month=t[month], year=t[year]).close)
+            TyroonStock.objects.get(day=t[day], month=t[month], year=t[year]).close)
     except:
         entry.priceRelAsian = 0
 
@@ -92,8 +92,8 @@ for t in tyroon:
     entry.movAverageExp = previousEMA
 
     #%B Indicator
-    divider = t[high] - t[low] if t[high] - t[low] != 0 else 1
-    entry.indicB = (t[close] - t[low]) / divider
+    divider = t[high] - t[low]
+    entry.indicB = (t[close] - t[low]) / divider if t[high] - t[low] != 0 else 0
 
     if i >= 1:
         # William %R:
@@ -105,7 +105,7 @@ for t in tyroon:
 
         # Ease of Movement
         if High != 0 and Low != 0 and t[volume] != 0:
-            entry.easeMove = ((High + Low) / 2 - (previousHigh + previousLow) / 2) / ((t[volume] / 100000) / (High - Low))
+            entry.easeMove = ((High + Low) / 2 - (previousHigh + previousLow) / 2) / ((t[volume] / 100000) / (High - Low)) if High != Low else 0
         else:
             entry.easeMove = 0
 
@@ -119,8 +119,7 @@ for t in tyroon:
         entry.forceIndex = (t[close] - tyroon[i - 1, close]) * t[volume]
 
         # Price Volume Trend:
-        entry.priceVolumeTrend = t[
-            volume] * (t[close] - tyroon[i - 1][close]) / tyroon[i - 1][close]
+        entry.priceVolumeTrend = t[volume] * (t[close] - tyroon[i - 1][close]) / tyroon[i - 1][close]
 
     if i >= 5:
         # 5 day disparity:
@@ -143,7 +142,7 @@ for t in tyroon:
 
     if i >= N:
         # Accumulation Distribution Line:
-        mFlowMultplier = ((t[close] - Low) - (High - t[close])) / (High - Low)
+        mFlowMultplier = ((t[close] - Low) - (High - t[close])) / (High - Low) if High != Low else 0
         mFlowVolume = mFlowMultplier * t[volume]
         previousADL = previousADL + mFlowVolume
         entry.accDistrLine = previousADL
@@ -154,10 +153,10 @@ for t in tyroon:
 
        # Ultimate Oscillator:
         BP = tyroon[i - N:i, close] - Low
-        TR = High - Low
+        TR = High - Low 
         entry.ultimateOsc = 100 * \
             ((4 * np.mean(sp.sum(BP[0:1 / 3 * N + 1]) / TR)) + (2 * np.mean(
-                sp.sum(BP[0:2 / 3 * N + 1]) / TR)) + np.mean(sp.sum(BP) / TR)) / (4 + 2 + 1)
+                sp.sum(BP[0:2 / 3 * N + 1]) / TR)) + np.mean(sp.sum(BP) / TR)) / (4 + 2 + 1) if High != Low else 0
 
         # Standard Deviation:
         entry.stdDev = standardDeviation
@@ -195,7 +194,7 @@ for t in tyroon:
         entry.momentum = (t[close] / tyroon[i - N][close]) * 100
 
         #Stochastik % K
-        entry.stochK = 100 * (t[close] - Low) / (High - Low)
+        entry.stochK = 100 * (t[close] - Low) / (High - Low) if High != Low else 0
 
         # Parabolic SAR
         if extremePoint < np.amax(tyroon[i - N, high]):
