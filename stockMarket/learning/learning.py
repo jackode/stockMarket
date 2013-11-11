@@ -9,6 +9,7 @@ from sklearn import decomposition
 from sklearn import lda
 from sklearn import neighbors
 from sklearn.feature_selection import RFE
+from sklearn import manifold
 
 #Gets content of p.pickle, performs the learning task and evaluates itself
 print 'Openning files...'
@@ -61,12 +62,12 @@ for i in xrange(0, len(allFeatures)):
         finalFeatures.append(allFeatures[i])
 
 #Applying LDA:
-print 'Applying LDA...'
-n_components = 200
-selLda = lda.LDA(n_components=n_components)
-finalFeatures = selLda.fit_transform(finalFeatures, finalAnswers)
-cvFeatures = selLda.transform(cvFeatures)
-testFeatures = selLda.transform(testFeatures)
+# print 'Applying LDA...'
+# n_components = 200
+# selLda = lda.LDA(n_components=n_components)
+# finalFeatures = selLda.fit_transform(finalFeatures, finalAnswers)
+# cvFeatures = selLda.transform(cvFeatures)
+# testFeatures = selLda.transform(testFeatures)
 
 #Applying PCA:
 # print 'Applying PCA...'
@@ -76,6 +77,15 @@ testFeatures = selLda.transform(testFeatures)
 # cvFeatures = pca.transform(cvFeatures)
 # testFeatures = pca.transform(testFeatures)
 # print 'With ' + str(n_components) + ' components we have a conserved variance of ' + str(pca.explained_variance_ratio_)
+
+
+#Applying Multi-Dimensional Scaling: (MDS)
+print 'Applying MDS...'
+n_components = 2000
+mds = manifold.MDS(n_components=n_components)
+finalFeatures = mds.fit_transform(finalFeatures)
+cvFeatures = mds.transform(cvFeatures)
+testFeatures = mds.transform(testFeatures)
 
 #Training Logistic Regression
 print 'Training Logistic Regression'
