@@ -173,11 +173,13 @@ print 'Generating the wanted results...'
 finalAnswers = []
 testAnswers = []
 cvAnswers = []
+allAnswers = []
 for i in xrange(260, len(dayFeatures)):
     old = TyroonStock.objects.get(
         day=dayFeatures[i, dayStock], month=dayFeatures[i, monthStock], year=dayFeatures[i, yearStock])
     curr = TyroonStock.objects.get(id=old.id - 1)
     answer = 0 if curr.close > old.close else 1
+    allAnswers.append(answer)
     if i in cvIds:
         cvAnswers.append(answer)
     elif i in testIds:
@@ -200,9 +202,11 @@ file = open('cvIds.pi', 'wb')
 pi.dump(cvIds, file)
 file = open('testIds.pi', 'wb')
 pi.dump(testIds, file)
+file = open('allAnswers.pi', 'wb')
+pi.dump(allAnswers, file)
 file = open('cvAnswers.pi', 'wb')
 pi.dump(cvAnswers, file)
-file = open('finalAnswers.pi', 'wb')
-pi.dump(finalAnswers, file)
-file = open('testAnswers.pi', 'wb')
-pi.dump(testAnswers, file)
+# file = open('finalAnswers.pi', 'wb')
+# pi.dump(finalAnswers, file)
+# file = open('testAnswers.pi', 'wb')
+# pi.dump(testAnswers, file)
