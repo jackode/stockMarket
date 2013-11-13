@@ -62,12 +62,12 @@ for i in xrange(0, len(allFeatures)):
         finalFeatures.append(allFeatures[i])
 
 #Applying LDA:
-# print 'Applying LDA...'
-# n_components = 200
-# selLda = lda.LDA(n_components=n_components)
-# finalFeatures = selLda.fit_transform(finalFeatures, finalAnswers)
-# cvFeatures = selLda.transform(cvFeatures)
-# testFeatures = selLda.transform(testFeatures)
+print 'Applying LDA...'
+n_components = 200
+selLda = lda.LDA(n_components=n_components)
+finalFeatures = selLda.fit_transform(finalFeatures, finalAnswers)
+cvFeatures = selLda.transform(cvFeatures)
+testFeatures = selLda.transform(testFeatures)
 
 #Applying PCA:
 # print 'Applying PCA...'
@@ -80,41 +80,38 @@ for i in xrange(0, len(allFeatures)):
 
 
 #Applying Multi-Dimensional Scaling: (MDS)
-print 'Applying MDS...'
-n_components = 2000
-mds = manifold.MDS(n_components=n_components)
-finalFeatures = mds.fit_transform(finalFeatures)
-cvFeatures = mds.transform(cvFeatures)
-testFeatures = mds.transform(testFeatures)
+# print 'Applying MDS...'
+# n_components = 2000
+# mds = manifold.MDS(n_components=n_components)
+# finalFeatures = mds.fit_transform(np.asarray(finalFeatures))
+# cvFeatures = mds.transform(cvFeatures)
+# testFeatures = mds.transform(testFeatures)
 
-#Training Logistic Regression
+# #Training Logistic Regression
 print 'Training Logistic Regression'
-lrLearner = LogisticRegression()
+lrLearner = LogisticRegression(penalty='l2', dual=True, C=200.0,)
 lrLearner.fit(finalFeatures, finalAnswers)
 
 #Evaluating Logistic Regression:
 evaluation = 0
 print 'Evaluating Logistic Regression...'
-for i in xrange(len(cvFeatures)):
-    prediction = lrLearner.predict(cvFeatures[i])
-    if prediction == cvAnswers[i]:
-        evaluation += 1
-print 'Logistic Regression performed ' + str(100*float(evaluation)/float(len(cvFeatures))) + '% on the test set.'
+# for i in xrange(len(testFeatures)):
+#     prediction = lrLearner.predict(testFeatures[i])
+#     if prediction == testAnswers[i]:
+#         evaluation += 1
+# print 'Logistic Regression performed ' + str(100*float(evaluation)/float(len(testFeatures))) + '% on the test set.'
+print 'Logistic Regression performed ' + str(100*lrLearner.score(testFeatures, testAnswers)) + '% on the test set.'
 
 
 # Training the SVM:
 print 'Training the SVM...'
-svmLearner = svm.SVC()
+svmLearner = svm.SVC(C=1.0, kernel="poly", degree=5, gamma=0.0, )
 svmLearner.fit(finalFeatures, finalAnswers)
 
 #Evaluating the SVM:
 evaluation = 0
 print 'Evaluating the SVM...'
-for i in xrange(len(cvFeatures)):
-    prediction = svmLearner.predict(cvFeatures[i])
-    if prediction == cvAnswers[i]:
-        evaluation += 1
-print 'The SVM performed ' + str(100*float(evaluation)/float(len(cvFeatures))) + '% on the test set.'
+print 'The SVM performed ' + str(100*svmLearner.score(testFeatures, testAnswers)) + '% on the test set.'
 
 #Training K-Nearest Neigbors
 print 'Training k-NN'
@@ -124,11 +121,12 @@ knnLearner.fit(finalFeatures, finalAnswers)
 #Evaluating k-NN:
 evaluation = 0
 print 'Evaluating k-NN...'
-for i in xrange(len(cvFeatures)):
-    prediction = knnLearner.predict(cvFeatures[i])
-    if prediction == cvAnswers[i]:
-        evaluation += 1
-print 'k-NN performed ' + str(100*float(evaluation)/float(len(cvFeatures))) + '% on the test set.'
+# for i in xrange(len(testFeatures)):
+#     prediction = knnLearner.predict(testFeatures[i])
+#     if prediction == testAnswers[i]:
+#         evaluation += 1
+# print 'k-NN performed ' + str(100*float(evaluation)/float(len(testFeatures))) + '% on the test set.'
+print 'k-NN performed ' + str(100*knnLearner.score(testFeatures, testAnswers)) + '% on the test set.'
 
 
 #Applying Wrappers for Logistic Regression:
