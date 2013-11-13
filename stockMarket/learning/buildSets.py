@@ -1,6 +1,5 @@
 #-*- coding: utf-8 -*-
 
-import os
 import scipy as sp
 import numpy as np
 import pickle as pi
