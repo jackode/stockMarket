@@ -191,15 +191,15 @@ for i in xrange(len(allFeatures)):
 
 print 'Final kNN error is ' + str(knnLearner.score(testFeatures, testAnswers))
 
-print 'Plotting the obtained errors...'
+print 'Plotting the obtained results...'
 curr_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
 execfile(curr_dir + '/../Scripts/plot.py')
 lrPrec, lrRecall, lrThresholds = precision_recall_curve(testAnswers, lrLearner.predict(testFeatures))
 svmPrec, svmRecall, svmThresholds = precision_recall_curve(testAnswers, svmLearner.predict(testFeatures))
 knnPrec, knnRecall, knnThresholds = precision_recall_curve(testAnswers, knnLearner.predict(testFeatures))
-plotLines([[lrRecall, lrPrec]], 'LR: Precision/Recall(Thr=' + str(lrThresholds) + ')', 'Recall', 'Precision')
-plotLines([[svmRecall, svmPrec]], 'SVM: Precision/Recall(Thr=' + str(svmThresholds) + ')', 'Recall', 'Precision')
-plotLines([[knnRecall, knnPrec]], 'kNN: Precision/Recall(Thr=' + str(knnThresholds) + ')', 'Recall', 'Precision')
+plotLines([[lrRecall], [lrPrec]], 'LR: Precision vs Recall(Thr=' + str(lrThresholds[0]) + ')', 'Recall', 'Precision')
+plotLines([[svmRecall], [svmPrec]], 'SVM: Precision vs Recall(Thr=' + str(svmThresholds[0]) + ')', 'Recall', 'Precision')
+plotLines([[knnRecall], [knnPrec]], 'kNN: Precision vs Recall(Thr=' + str(knnThresholds[0]) + ')', 'Recall', 'Precision')
 multiPlot([[lrTrainIndices, lrTestIndices], [lrTrainingError, lrTestingError]], 'Errors:LogRegr', 'Dataset size', 'Error')
 multiPlot([[svmTrainIndices, svmTestIndices], [svmTrainingError, svmTestingError]], 'Errors:SVM', 'Dataset size', 'Error')
 multiPlot([[knnTrainIndices, knnTestIndices], [knnTrainingError, knnTestingError]], 'Errors:kNN', 'Dataset size', 'Error')
