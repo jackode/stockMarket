@@ -10,6 +10,8 @@ from sklearn import decomposition
 from sklearn import lda
 from sklearn import neighbors
 from sklearn.metrics import precision_recall_curve
+from sklearn.cross_validation import StratifiedKFold
+from sklearn.feature_selection import RFECV
 
 #Gets content of p.pickle, performs the learning task and evaluates itself
 print 'Openning files...'
@@ -132,7 +134,7 @@ cvAnswers = np.asarray(cvAnswers)
 
 
 lrLearner = LogisticRegression(penalty='l2', dual=True, C=1.0)
-svmLearner = svm.SVC(C=1.0, kernel="poly", degree=5, gamma=0.0)
+svmLearner = svm.SVC(C=1.0, kernel="poly", degree=5, gamma=0.0, probability=True)
 knnLearner = neighbors.KNeighborsClassifier(n_neighbors=350)
 
 print 'Calculating LR Errors...'
@@ -194,12 +196,23 @@ print 'Final kNN error is ' + str(knnLearner.score(testFeatures, testAnswers))
 print 'Plotting the obtained results...'
 curr_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
 execfile(curr_dir + '/../Scripts/plot.py')
-lrPrec, lrRecall, lrThresholds = precision_recall_curve(testAnswers, lrLearner.predict(testFeatures))
-svmPrec, svmRecall, svmThresholds = precision_recall_curve(testAnswers, svmLearner.predict(testFeatures))
-knnPrec, knnRecall, knnThresholds = precision_recall_curve(testAnswers, knnLearner.predict(testFeatures))
-plotLines([[lrRecall], [lrPrec]], 'LR: Precision vs Recall(Thr=' + str(lrThresholds[0]) + ')', 'Recall', 'Precision')
-plotLines([[svmRecall], [svmPrec]], 'SVM: Precision vs Recall(Thr=' + str(svmThresholds[0]) + ')', 'Recall', 'Precision')
-plotLines([[knnRecall], [knnPrec]], 'kNN: Precision vs Recall(Thr=' + str(knnThresholds[0]) + ')', 'Recall', 'Precision')
-multiPlot([[lrTrainIndices, lrTestIndices], [lrTrainingError, lrTestingError]], 'Errors:LogRegr', 'Dataset size', 'Error')
-multiPlot([[svmTrainIndices, svmTestIndices], [svmTrainingError, svmTestingError]], 'Errors:SVM', 'Dataset size', 'Error')
-multiPlot([[knnTrainIndices, knnTestIndices], [knnTrainingError, knnTestingError]], 'Errors:kNN', 'Dataset size', 'Error')
+
+lrPrecDown, lrRecallDown, lrThresholdsDown = precision_recall_curve(testAnswers, lrLearner.predict_proba(testFeatures)[:, 0])
+svmPrecDown, svmRecallDown, svmThresholdsDown = precision_recall_curve(testAnswers, svmLearner.predict_proba(testFeatures)[:, 0])
+knnPrecDown, knnRecallDown, knnThresholdsDown = precision_recall_curve(testAnswers, knnLearner.predict_proba(testFeatures)[:, 0])
+
+lrPrecUp, lrRecallUp, lrThresholdsUp = precision_recall_curve(testAnswers, lrLearner.predict_proba(testFeatures)[:, 1])
+svmPrecUp, svmRecallUp, svmThresholdsUp = precision_recall_curve(testAnswers, svmLearner.predict_proba(testFeatures)[:, 1])
+knnPrecUp, knnRecallUp, knnThresholdsUp = precision_recall_curve(testAnswers, knnLearner.predict_proba(testFeatures)[:, 1])
+
+plotLines([[lrRecallDown], [lrPrecDown]], 'LR: Precision vs Recall(Thr=' + str(lrThresholdsDown[0]) + ', Down)', 'Recall', 'Precision')
+plotLines([[svmRecallDown], [svmPrecDown]], 'SVM: Precision vs Recall(Thr=' + str(svmThresholdsDown[0]) + ', Down)', 'Recall', 'Precision')
+plotLines([[knnRecallDown], [knnPrecDown]], 'kNN: Precision vs Recall(Thr=' + str(knnThresholdsDown[0]) + ', Down)', 'Recall', 'Precision')
+
+plotLines([[lrRecallUp], [lrPrecUp]], 'LR: Precision vs Recall(Thr=' + str(lrThresholdsUp[1]) + ', Up)', 'Recall', 'Precision')
+plotLines([[svmRecallUp], [svmPrecUp]], 'SVM: Precision vs Recall(Thr=' + str(svmThresholdsUp[1]) + ', Up)', 'Recall', 'Precision')
+plotLines([[knnRecallUp], [knnPrecUp]], 'kNN: Precision vs Recall(Thr=' + str(knnThresholdsUp[1]) + ', Up)', 'Recall', 'Precision')
+
+plotLines([[lrTrainIndices, lrTestIndices], [lrTrainingError, lrTestingError]], 'Errors:LogRegr', 'Dataset size', 'Error')
+plotLines([[svmTrainIndices, svmTestIndices], [svmTrainingError, svmTestingError]], 'Errors:SVM', 'Dataset size', 'Error')
+plotLines([[knnTrainIndices, knnTestIndices], [knnTrainingError, knnTestingError]], 'Errors:kNN', 'Dataset size', 'Error')
