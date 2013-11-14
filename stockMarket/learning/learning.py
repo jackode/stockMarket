@@ -12,6 +12,7 @@ from sklearn import neighbors
 from sklearn.metrics import precision_recall_curve
 from sklearn.cross_validation import StratifiedKFold
 from sklearn.feature_selection import RFECV
+from sklearn.metrics import classification_report
 
 #Gets content of p.pickle, performs the learning task and evaluates itself
 print 'Openning files...'
@@ -205,14 +206,30 @@ lrPrecUp, lrRecallUp, lrThresholdsUp = precision_recall_curve(testAnswers, lrLea
 svmPrecUp, svmRecallUp, svmThresholdsUp = precision_recall_curve(testAnswers, svmLearner.predict_proba(testFeatures)[:, 1])
 knnPrecUp, knnRecallUp, knnThresholdsUp = precision_recall_curve(testAnswers, knnLearner.predict_proba(testFeatures)[:, 1])
 
-plotLines([[lrRecallDown], [lrPrecDown]], 'LR: Precision vs Recall(Thr=' + str(lrThresholdsDown[0]) + ', Down)', 'Recall', 'Precision')
-plotLines([[svmRecallDown], [svmPrecDown]], 'SVM: Precision vs Recall(Thr=' + str(svmThresholdsDown[0]) + ', Down)', 'Recall', 'Precision')
-plotLines([[knnRecallDown], [knnPrecDown]], 'kNN: Precision vs Recall(Thr=' + str(knnThresholdsDown[0]) + ', Down)', 'Recall', 'Precision')
+plotLines([[lrRecallDown], [lrPrecDown]], 'LR: Precision vs Recall(Down)', 'Recall', 'Precision')
+plotLines([[svmRecallDown], [svmPrecDown]], 'SVM: Precision vs Recall(Down)', 'Recall', 'Precision')
+plotLines([[knnRecallDown], [knnPrecDown]], 'kNN: Precision vs Recall(Down)', 'Recall', 'Precision')
 
-plotLines([[lrRecallUp], [lrPrecUp]], 'LR: Precision vs Recall(Thr=' + str(lrThresholdsUp[1]) + ', Up)', 'Recall', 'Precision')
-plotLines([[svmRecallUp], [svmPrecUp]], 'SVM: Precision vs Recall(Thr=' + str(svmThresholdsUp[1]) + ', Up)', 'Recall', 'Precision')
-plotLines([[knnRecallUp], [knnPrecUp]], 'kNN: Precision vs Recall(Thr=' + str(knnThresholdsUp[1]) + ', Up)', 'Recall', 'Precision')
+plotLines([[lrRecallUp], [lrPrecUp]], 'LR: Precision vs Recall(Up)', 'Recall', 'Precision')
+plotLines([[svmRecallUp], [svmPrecUp]], 'SVM: Precision vs Recall(Up)', 'Recall', 'Precision')
+plotLines([[knnRecallUp], [knnPrecUp]], 'kNN: Precision vs Recall(Up)', 'Recall', 'Precision')
 
 plotLines([[lrTrainIndices, lrTestIndices], [lrTrainingError, lrTestingError]], 'Errors:LogRegr', 'Dataset size', 'Error')
 plotLines([[svmTrainIndices, svmTestIndices], [svmTrainingError, svmTestingError]], 'Errors:SVM', 'Dataset size', 'Error')
 plotLines([[knnTrainIndices, knnTestIndices], [knnTrainingError, knnTestingError]], 'Errors:kNN', 'Dataset size', 'Error')
+
+#Printing Classification Report:
+print 'Report for Logistic Regression (Up):'
+print classification_report(testAnswers, lrLearner.predict_proba(testFeatures)[:, 1] > 0.69, target_names=['Don\'t know', 'Will go up'])
+print 'Report for Logistic Regression (Down):'
+print classification_report(testAnswers, lrLearner.predict_proba(testFeatures)[:, 0] > 0.6, target_names=['Don\'t know', 'Will go Down'])
+
+print 'Report for SVM (Up):'
+print classification_report(testAnswers, svmLearner.predict_proba(testFeatures)[:, 1] > 0.53, target_names=['Don\'t know', 'Will go up'])
+print 'Report for SVM (Down):'
+print classification_report(testAnswers, svmLearner.predict_proba(testFeatures)[:, 0] > 0.46, target_names=['Don\'t know', 'Will go Down'])
+
+print 'Report for kNN (Up):'
+print classification_report(testAnswers, knnLearner.predict_proba(testFeatures)[:, 1] > 0.56, target_names=['Don\'t know', 'Will go up'])
+print 'Report for kNN (Down):'
+print classification_report(testAnswers, knnLearner.predict_proba(testFeatures)[:, 0] > 0.3, target_names=['Don\'t know', 'Will go Down'])

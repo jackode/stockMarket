@@ -58,7 +58,6 @@ def plotLines(plotArray, title='', xlabel='', ylabel=''):
             c = colors[i]
             )
 
-    figure.autoscale(tight=True)
-    figure.legend(loc="upper right")
+    # figure.autoscale(tight=True)
     figure.grid()
     figure.savefig(title + '.svg', format='svg')

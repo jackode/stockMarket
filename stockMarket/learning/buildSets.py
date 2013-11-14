@@ -177,7 +177,7 @@ for i in xrange(260, len(dayFeatures)):
     old = TyroonStock.objects.get(
         day=dayFeatures[i, dayStock], month=dayFeatures[i, monthStock], year=dayFeatures[i, yearStock])
     curr = TyroonStock.objects.get(id=old.id - 1)
-    answer = 0 if curr.close > old.close else 1
+    answer = 0 if curr.close > old.close else 1 #if curr.close < old.close else 2
     allAnswers.append(answer)
     if i in cvIds:
         cvAnswers.append(answer)
