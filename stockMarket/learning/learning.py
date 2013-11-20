@@ -39,6 +39,14 @@ for i in xrange(260, len(dayFeatures)):
         feature = np.append(feature, dayFeatures[i-j])
     allFeatures.append(feature)
 
+#Shuffling data:
+shuffled = dayFeatures
+shuffled = np.hstack((shuffled, np.zeros((shuffled.shape[0], 1), dtype=shuffled.dtype)))
+shuffled[:, -1] = allAnswers
+np.random.shuffle(shuffled)
+dayFeatures = shuffled[:, :-1]
+allAnswers = shuffled[:, -1]
+
 #Building Sets:
 print 'Building sets...'
 finalFeatures = []
@@ -102,14 +110,6 @@ finalFeatures = np.asarray(finalFeatures)
 finalAnswers = np.asarray(finalAnswers)
 cvFeatures = np.asarray(cvFeatures)
 cvAnswers = np.asarray(cvAnswers)
-
-#Shuffling data:
-shuffled = finalFeatures
-shuffled = np.hstack((shuffled, np.zeros((shuffled.shape[0], 1), dtype=shuffled.dtype)))
-shuffled[:, -1] = finalAnswers
-np.random.shuffle(shuffled)
-finalFeatures = shuffled[:, :-1]
-finalAnswers = shuffled[:, -1]
 
 lrLearner = LogisticRegression(penalty='l2', dual=True, C=1.0)
 svmLearner = svm.SVC(C=1.0, kernel="poly", degree=5, gamma=0.0, probability=True)
