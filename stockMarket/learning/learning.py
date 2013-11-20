@@ -112,44 +112,40 @@ lrLearner = LogisticRegression(penalty='l2', dual=True, C=1.0)
 svmLearner = svm.SVC(C=1.0, kernel="poly", degree=5, gamma=0.0, probability=True)
 knnLearner = neighbors.KNeighborsClassifier(n_neighbors=350)
 
+start = 10
+
 print 'Calculating LR Errors...'
-t = 10
-s = 10
-for i in xrange(finalFeatures):
-        lrLearner.fit(finalFeatures[0:i+1], finalAnswers[0:i+1])
-        error = lrLearner.score(finalFeatures[0:i+1], finalAnswers[0:i+1])
-        lrTrainingError.append(1-error)
-        lrIndices.append(i)
-        error = lrLearner.score(testFeatures, testAnswers)
-        lrTestingError.append(1-error)
+for i in xrange(start, len(finalFeatures)):
+    lrLearner.fit(finalFeatures[0:i+1], finalAnswers[0:i+1])
+    error = lrLearner.score(finalFeatures[0:i+1], finalAnswers[0:i+1])
+    lrTrainingError.append(1-error)
+    lrIndices.append(i)
+    error = lrLearner.score(testFeatures, testAnswers)
+    lrTestingError.append(1-error)
 
 print 'Final LR error is ' + str(lrLearner.score(testFeatures, testAnswers))
 
 
 print 'Calculating SVM Errors...'
-t = 10
-s = 10
-for i in xrange(finalFeatures):
-        svmLearner.fit(finalFeatures[0:i+1], finalAnswers[0:i+1])
-        error = svmLearner.score(finalFeatures[0:i+1], finalAnswers[0:i+1])
-        svmTrainingError.append(1-error)
-        svmIndices.append(i)
-        error = svmLearner.score(testFeatures, testAnswers)
-        svmTestingError.append(1-error)
+for i in xrange(start, len(finalFeatures)):
+    svmLearner.fit(finalFeatures[0:i+1], finalAnswers[0:i+1])
+    error = svmLearner.score(finalFeatures[0:i+1], finalAnswers[0:i+1])
+    svmTrainingError.append(1-error)
+    svmIndices.append(i)
+    error = svmLearner.score(testFeatures, testAnswers)
+    svmTestingError.append(1-error)
 
 print 'Final SVM error is ' + str(svmLearner.score(testFeatures, testAnswers))
 
 
 print 'Calculating kNN Errors...'
-t = 10
-s = 10
-for i in xrange(finalFeatures):
-        knnLearner.fit(finalFeatures[0:i+1], finalAnswers[0:i+1])
-        error = knnLearner.score(finalFeatures[0:i+1], finalAnswers[0:i+1])
-        knnTrainingError.append(1-error)
-        knnIndices.append(i)
-        error = knnLearner.score(testFeatures, testAnswers)
-        knnTestingError.append(1-error)
+for i in xrange(start, len(finalFeatures)):
+    knnLearner.fit(finalFeatures[0:i+1], finalAnswers[0:i+1])
+    error = knnLearner.score(finalFeatures[0:i+1], finalAnswers[0:i+1])
+    knnTrainingError.append(1-error)
+    knnIndices.append(i)
+    error = knnLearner.score(testFeatures, testAnswers)
+    knnTestingError.append(1-error)
 
 print 'Final kNN error is ' + str(knnLearner.score(testFeatures, testAnswers))
 
