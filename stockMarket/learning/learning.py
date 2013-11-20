@@ -40,11 +40,11 @@ for i in xrange(260, len(dayFeatures)):
     allFeatures.append(feature)
 
 #Shuffling data:
-shuffled = dayFeatures
+shuffled = np.asarray(allFeatures)
 shuffled = np.hstack((shuffled, np.zeros((shuffled.shape[0], 1), dtype=shuffled.dtype)))
 shuffled[:, -1] = allAnswers
 np.random.shuffle(shuffled)
-dayFeatures = shuffled[:, :-1]
+allFeatures = shuffled[:, :-1]
 allAnswers = shuffled[:, -1]
 
 #Building Sets:
@@ -91,18 +91,15 @@ testFeatures = selLda.transform(testFeatures)
 
 lrTrainingError = []
 lrTestingError = []
-lrTrainIndices = []
-lrTestIndices = []
+lrIndices = []
 
 svmTrainingError = []
 svmTestingError = []
-svmTrainIndices = []
-svmTestIndices = []
+svmIndices = []
 
 knnTrainingError = []
 knnTestingError = []
-knnTrainIndices = []
-knnTestIndices = []
+knnIndices = []
 
 testFeatures = np.asarray(testFeatures)
 testAnswers = np.asarray(testAnswers)
@@ -118,18 +115,13 @@ knnLearner = neighbors.KNeighborsClassifier(n_neighbors=350)
 print 'Calculating LR Errors...'
 t = 10
 s = 10
-for i in xrange(len(allFeatures)):
-    if not i+260 in cvIds and not i+260 in testIds:
-        lrLearner.fit(finalFeatures[0:t+1], finalAnswers[0:t+1])
-        error = lrLearner.score(finalFeatures[0:t+1], finalAnswers[0:t+1])
+for i in xrange(finalFeatures):
+        lrLearner.fit(finalFeatures[0:i+1], finalAnswers[0:i+1])
+        error = lrLearner.score(finalFeatures[0:i+1], finalAnswers[0:i+1])
         lrTrainingError.append(1-error)
-        lrTrainIndices.append(i+260)
-        t += 1
-    elif i+260 in testIds:
-        error = lrLearner.score(testFeatures[0:s+1], testAnswers[0:s+1])
-        lrTestIndices.append(i+260)
+        lrIndices.append(i)
+        error = lrLearner.score(testFeatures, testAnswers)
         lrTestingError.append(1-error)
-        s += 1
 
 print 'Final LR error is ' + str(lrLearner.score(testFeatures, testAnswers))
 
@@ -137,18 +129,13 @@ print 'Final LR error is ' + str(lrLearner.score(testFeatures, testAnswers))
 print 'Calculating SVM Errors...'
 t = 10
 s = 10
-for i in xrange(len(allFeatures)):
-    if not i+260 in cvIds and not i+260 in testIds:
-        svmLearner.fit(finalFeatures[0:t+1], finalAnswers[0:t+1])
-        error = svmLearner.score(finalFeatures[0:t+1], finalAnswers[0:t+1])
+for i in xrange(finalFeatures):
+        svmLearner.fit(finalFeatures[0:i+1], finalAnswers[0:i+1])
+        error = svmLearner.score(finalFeatures[0:i+1], finalAnswers[0:i+1])
         svmTrainingError.append(1-error)
-        svmTrainIndices.append(i+260)
-        t += 1
-    elif i+260 in testIds:
-        error = svmLearner.score(testFeatures[0:s+1], testAnswers[0:s+1])
-        svmTestIndices.append(i+260)
+        svmIndices.append(i)
+        error = svmLearner.score(testFeatures, testAnswers)
         svmTestingError.append(1-error)
-        s += 1
 
 print 'Final SVM error is ' + str(svmLearner.score(testFeatures, testAnswers))
 
@@ -156,18 +143,13 @@ print 'Final SVM error is ' + str(svmLearner.score(testFeatures, testAnswers))
 print 'Calculating kNN Errors...'
 t = 10
 s = 10
-for i in xrange(len(allFeatures)):
-    if not i+260 in cvIds and not i+260 in testIds:
-        knnLearner.fit(finalFeatures[0:t+1], finalAnswers[0:t+1])
-        error = knnLearner.score(finalFeatures[0:t+1], finalAnswers[0:t+1])
+for i in xrange(finalFeatures):
+        knnLearner.fit(finalFeatures[0:i+1], finalAnswers[0:i+1])
+        error = knnLearner.score(finalFeatures[0:i+1], finalAnswers[0:i+1])
         knnTrainingError.append(1-error)
-        knnTrainIndices.append(i+260)
-        t += 1
-    elif i+260 in testIds:
-        error = knnLearner.score(testFeatures[0:s+1], testAnswers[0:s+1])
-        knnTestIndices.append(i+260)
+        knnIndices.append(i)
+        error = knnLearner.score(testFeatures, testAnswers)
         knnTestingError.append(1-error)
-        s += 1
 
 print 'Final kNN error is ' + str(knnLearner.score(testFeatures, testAnswers))
 
@@ -191,9 +173,9 @@ plotLines([[lrRecallUp], [lrPrecUp]], 'LR: Precision vs Recall(Up)', 'Recall', '
 plotLines([[svmRecallUp], [svmPrecUp]], 'SVM: Precision vs Recall(Up)', 'Recall', 'Precision')
 plotLines([[knnRecallUp], [knnPrecUp]], 'kNN: Precision vs Recall(Up)', 'Recall', 'Precision')
 
-plotLines([[lrTrainIndices, lrTestIndices], [lrTrainingError, lrTestingError]], 'Errors:LogRegr', 'Dataset size', 'Error')
-plotLines([[svmTrainIndices, svmTestIndices], [svmTrainingError, svmTestingError]], 'Errors:SVM', 'Dataset size', 'Error')
-plotLines([[knnTrainIndices, knnTestIndices], [knnTrainingError, knnTestingError]], 'Errors:kNN', 'Dataset size', 'Error')
+plotLines([[lrIndices, lrIndices], [lrTrainingError, lrTestingError]], 'Errors:LogRegr', 'Dataset size', 'Error')
+plotLines([[svmIndices, svmIndices], [svmTrainingError, svmTestingError]], 'Errors:SVM', 'Dataset size', 'Error')
+plotLines([[knnIndices, knnIndices], [knnTrainingError, knnTestingError]], 'Errors:kNN', 'Dataset size', 'Error')
 
 #Printing Classification Report:
 print 'Report for Logistic Regression (Up):'
