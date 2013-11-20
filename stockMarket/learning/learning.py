@@ -77,39 +77,9 @@ testFeatures = selLda.transform(testFeatures)
 # print 'With ' + str(n_components) + ' components we have a conserved variance of ' + str(pca.explained_variance_ratio_)
 
 
-# #Training Logistic Regression
-# print 'Training Logistic Regression'
-# lrLearner = LogisticRegression(penalty='l2', dual=True, C=1.0)
-# lrLearner.fit(finalFeatures, finalAnswers)
-
-# #Evaluating Logistic Regression:
-# print 'Evaluating Logistic Regression...'
-# print 'Logistic Regression performed ' + str(100*lrLearner.score(testFeatures, testAnswers)) + '% on the test set.'
-
-
-# # Training the SVM:
-# print 'Training the SVM...'
-# svmLearner = svm.SVC(C=1.0, kernel="poly", degree=5, gamma=0.0)
-# svmLearner.fit(finalFeatures, finalAnswers)
-
-# #Evaluating the SVM:
-# print 'Evaluating the SVM...'
-# print 'The SVM performed ' + str(100*svmLearner.score(testFeatures, testAnswers)) + '% on the test set.'
-
-# #Training K-Nearest Neigbors
-# print 'Training k-NN'
-# knnLearner = neighbors.KNeighborsClassifier(n_neighbors=350)
-# knnLearner.fit(finalFeatures, finalAnswers)
-
-# #Evaluating k-NN:
-# print 'Evaluating k-NN...'
-# print 'k-NN performed ' + str(100*knnLearner.score(testFeatures, testAnswers)) + '% on the test set.'
-
 ##########################
-# Plotting Training and test errors:
+# Plotting Training and Test errors:
 ##########################
-
-# execfile('../../Scripts/plot.py')
 
 lrTrainingError = []
 lrTestingError = []
@@ -133,6 +103,13 @@ finalAnswers = np.asarray(finalAnswers)
 cvFeatures = np.asarray(cvFeatures)
 cvAnswers = np.asarray(cvAnswers)
 
+#Shuffling data:
+shuffled = finalFeatures
+shuffled = np.hstack((shuffled, np.zeros((shuffled.shape[0], 1), dtype=shuffled.dtype)))
+shuffled[:, -1] = finalAnswers
+np.random.shuffle(shuffled)
+finalFeatures = shuffled[:, :-1]
+finalAnswers = shuffled[:, -1]
 
 lrLearner = LogisticRegression(penalty='l2', dual=True, C=1.0)
 svmLearner = svm.SVC(C=1.0, kernel="poly", degree=5, gamma=0.0, probability=True)
