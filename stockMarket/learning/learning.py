@@ -154,13 +154,13 @@ print 'Plotting the obtained results...'
 curr_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
 execfile(curr_dir + '/../Scripts/plot.py')
 
-lrPrecDown, lrRecallDown, lrThresholdsDown = precision_recall_curve(testAnswers == -1, lrLearner.predict_proba(testFeatures)[:, 1])
-svmPrecDown, svmRecallDown, svmThresholdsDown = precision_recall_curve(testAnswers == -1, svmLearner.predict_proba(testFeatures)[:, 1])
-knnPrecDown, knnRecallDown, knnThresholdsDown = precision_recall_curve(testAnswers == -1, knnLearner.predict_proba(testFeatures)[:, 1])
+lrPrecDown, lrRecallDown, lrThresholdsDown = precision_recall_curve(testAnswers == -1, lrLearner.predict_proba(testFeatures)[:, 0])
+svmPrecDown, svmRecallDown, svmThresholdsDown = precision_recall_curve(testAnswers == -1, svmLearner.predict_proba(testFeatures)[:, 0])
+knnPrecDown, knnRecallDown, knnThresholdsDown = precision_recall_curve(testAnswers == -1, knnLearner.predict_proba(testFeatures)[:, 0])
 
-lrPrecUp, lrRecallUp, lrThresholdsUp = precision_recall_curve(testAnswers == 1, lrLearner.predict_proba(testFeatures)[:, 2])
-svmPrecUp, svmRecallUp, svmThresholdsUp = precision_recall_curve(testAnswers == 1, svmLearner.predict_proba(testFeatures)[:, 2])
-knnPrecUp, knnRecallUp, knnThresholdsUp = precision_recall_curve(testAnswers == 1, knnLearner.predict_proba(testFeatures)[:, 2])
+lrPrecUp, lrRecallUp, lrThresholdsUp = precision_recall_curve(testAnswers == 1, lrLearner.predict_proba(testFeatures)[:, 1])
+svmPrecUp, svmRecallUp, svmThresholdsUp = precision_recall_curve(testAnswers == 1, svmLearner.predict_proba(testFeatures)[:, 1])
+knnPrecUp, knnRecallUp, knnThresholdsUp = precision_recall_curve(testAnswers == 1, knnLearner.predict_proba(testFeatures)[:, 1])
 
 plotLines([[lrRecallDown], [lrPrecDown]], 'LR: Precision vs Recall(Down)', 'Recall', 'Precision')
 plotLines([[svmRecallDown], [svmPrecDown]], 'SVM: Precision vs Recall(Down)', 'Recall', 'Precision')
@@ -176,16 +176,16 @@ plotLines([[knnIndices, knnIndices], [knnTrainingError, knnTestingError]], 'Erro
 
 #Printing Classification Report:
 print 'Report for Logistic Regression (Up):'
-print classification_report(testAnswers == 1, lrLearner.predict_proba(testFeatures)[:, 2] > 0.69, target_names=['Don\'t know', 'Will go up'])
+print classification_report(testAnswers == 1, lrLearner.predict_proba(testFeatures)[:, 1] > 0.54, target_names=['Don\'t know', 'Will go up'])
 print 'Report for Logistic Regression (Down):'
-print classification_report(testAnswers == -1, lrLearner.predict_proba(testFeatures)[:, 1] > 0.6, target_names=['Don\'t know', 'Will go Down'])
+print classification_report(testAnswers == -1, lrLearner.predict_proba(testFeatures)[:, 0] > 0.008, target_names=['Don\'t know', 'Will go Down'])
 
 print 'Report for SVM (Up):'
-print classification_report(testAnswers == 1, svmLearner.predict_proba(testFeatures)[:, 2] > 0.53, target_names=['Don\'t know', 'Will go up'])
+print classification_report(testAnswers == 1, svmLearner.predict_proba(testFeatures)[:, 1] > 0.54, target_names=['Don\'t know', 'Will go up'])
 print 'Report for SVM (Down):'
-print classification_report(testAnswers == -1, svmLearner.predict_proba(testFeatures)[:, 1] > 0.46, target_names=['Don\'t know', 'Will go Down'])
+print classification_report(testAnswers == -1, svmLearner.predict_proba(testFeatures)[:, 0] > 0.05, target_names=['Don\'t know', 'Will go Down'])
 
 print 'Report for kNN (Up):'
-print classification_report(testAnswers == 1, knnLearner.predict_proba(testFeatures)[:, 2] > 0.56, target_names=['Don\'t know', 'Will go up'])
+print classification_report(testAnswers == 1, knnLearner.predict_proba(testFeatures)[:, 1] > 0.51, target_names=['Don\'t know', 'Will go up'])
 print 'Report for kNN (Down):'
-print classification_report(testAnswers == -1, knnLearner.predict_proba(testFeatures)[:, 1] > 0.3, target_names=['Don\'t know', 'Will go Down'])
+print classification_report(testAnswers == -1, knnLearner.predict_proba(testFeatures)[:, 0] > 0.3, target_names=['Don\'t know', 'Will go Down'])
