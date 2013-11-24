@@ -39,14 +39,6 @@ for i in xrange(260, len(dayFeatures)):
         feature = np.append(feature, dayFeatures[i-j])
     allFeatures.append(feature)
 
-#Shuffling data:
-shuffled = np.asarray(allFeatures)
-shuffled = np.hstack((shuffled, np.zeros((shuffled.shape[0], 1), dtype=shuffled.dtype)))
-shuffled[:, -1] = allAnswers
-np.random.shuffle(shuffled)
-allFeatures = shuffled[:, :-1]
-allAnswers = shuffled[:, -1]
-
 #Building Sets:
 print 'Building sets...'
 finalFeatures = []
@@ -66,6 +58,14 @@ for i in xrange(0, len(allFeatures)):
     else:
         finalAnswers.append(allAnswers[i])
         finalFeatures.append(allFeatures[i])
+
+#Shuffling Training Features:
+shuffled = np.asarray(finalFeatures)
+shuffled = np.hstack((shuffled, np.zeros((shuffled.shape[0], 1), dtype=shuffled.dtype)))
+shuffled[:, -1] = finalAnswers
+np.random.shuffle(shuffled)
+finalFeatures = shuffled[:, :-1]
+finalAnswers = shuffled[:, -1]
 
 #Applying LDA:
 print 'Applying LDA...'
@@ -108,10 +108,10 @@ finalAnswers = np.asarray(finalAnswers)
 cvFeatures = np.asarray(cvFeatures)
 cvAnswers = np.asarray(cvAnswers)
 
-lrLearner = LogisticRegression(penalty='l2', dual=True, C=1.0)
-svmLearner = svm.SVC(C=1.0, kernel="linear", gamma=0.0, probability=True)
-#Best when only binary classification svmLearner = svm.SVC(C=1.0, kernel="poly", degree=5, gamma=0.0, probability=True)
-knnLearner = neighbors.KNeighborsClassifier(n_neighbors=350)
+lrLearner = LogisticRegression(penalty='l2', dual=False, C=1.0)
+#svmLearner = svm.SVC(C=1.0, kernel="linear", gamma=0.0, probability=True)
+svmLearner = svm.SVC(C=1.0, kernel="poly", degree=5, gamma=0.0, probability=True)
+knnLearner = neighbors.KNeighborsClassifier(n_neighbors=350, algorithm='auto')
 
 start = 10
 
@@ -124,7 +124,7 @@ for i in xrange(start, len(finalFeatures)):
     error = lrLearner.score(testFeatures, testAnswers)
     lrTestingError.append(1-error)
 
-print 'Final LR error is ' + str(lrLearner.score(testFeatures, testAnswers))
+print 'Final LR score is ' + str(lrLearner.score(testFeatures, testAnswers))
 
 
 print 'Calculating SVM Errors...'
@@ -136,7 +136,7 @@ for i in xrange(start, len(finalFeatures)):
     error = svmLearner.score(testFeatures, testAnswers)
     svmTestingError.append(1-error)
 
-print 'Final SVM error is ' + str(svmLearner.score(testFeatures, testAnswers))
+print 'Final SVM score is ' + str(svmLearner.score(testFeatures, testAnswers))
 
 
 print 'Calculating kNN Errors...'
@@ -148,15 +148,15 @@ for i in xrange(start, len(finalFeatures)):
     error = knnLearner.score(testFeatures, testAnswers)
     knnTestingError.append(1-error)
 
-print 'Final kNN error is ' + str(knnLearner.score(testFeatures, testAnswers))
+print 'Final kNN score is ' + str(knnLearner.score(testFeatures, testAnswers))
 
 print 'Plotting the obtained results...'
 curr_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
 execfile(curr_dir + '/../Scripts/plot.py')
 
-lrPrecDown, lrRecallDown, lrThresholdsDown = precision_recall_curve(testAnswers == -1, lrLearner.predict_proba(testFeatures)[:, 0])
-svmPrecDown, svmRecallDown, svmThresholdsDown = precision_recall_curve(testAnswers == -1, svmLearner.predict_proba(testFeatures)[:, 0])
-knnPrecDown, knnRecallDown, knnThresholdsDown = precision_recall_curve(testAnswers == -1, knnLearner.predict_proba(testFeatures)[:, 0])
+lrPrecDown, lrRecallDown, lrThresholdsDown = precision_recall_curve(testAnswers == 0, lrLearner.predict_proba(testFeatures)[:, 0])
+svmPrecDown, svmRecallDown, svmThresholdsDown = precision_recall_curve(testAnswers == 0, svmLearner.predict_proba(testFeatures)[:, 0])
+knnPrecDown, knnRecallDown, knnThresholdsDown = precision_recall_curve(testAnswers == 0, knnLearner.predict_proba(testFeatures)[:, 0])
 
 lrPrecUp, lrRecallUp, lrThresholdsUp = precision_recall_curve(testAnswers == 1, lrLearner.predict_proba(testFeatures)[:, 1])
 svmPrecUp, svmRecallUp, svmThresholdsUp = precision_recall_curve(testAnswers == 1, svmLearner.predict_proba(testFeatures)[:, 1])
@@ -178,14 +178,14 @@ plotLines([[knnIndices, knnIndices], [knnTrainingError, knnTestingError]], 'Erro
 print 'Report for Logistic Regression (Up):'
 print classification_report(testAnswers == 1, lrLearner.predict_proba(testFeatures)[:, 1] > 0.54, target_names=['Don\'t know', 'Will go up'])
 print 'Report for Logistic Regression (Down):'
-print classification_report(testAnswers == -1, lrLearner.predict_proba(testFeatures)[:, 0] > 0.008, target_names=['Don\'t know', 'Will go Down'])
+print classification_report(testAnswers == 0, lrLearner.predict_proba(testFeatures)[:, 0] > 0.008, target_names=['Don\'t know', 'Will go Down'])
 
 print 'Report for SVM (Up):'
 print classification_report(testAnswers == 1, svmLearner.predict_proba(testFeatures)[:, 1] > 0.54, target_names=['Don\'t know', 'Will go up'])
 print 'Report for SVM (Down):'
-print classification_report(testAnswers == -1, svmLearner.predict_proba(testFeatures)[:, 0] > 0.05, target_names=['Don\'t know', 'Will go Down'])
+print classification_report(testAnswers == 0, svmLearner.predict_proba(testFeatures)[:, 0] > 0.05, target_names=['Don\'t know', 'Will go Down'])
 
 print 'Report for kNN (Up):'
 print classification_report(testAnswers == 1, knnLearner.predict_proba(testFeatures)[:, 1] > 0.51, target_names=['Don\'t know', 'Will go up'])
 print 'Report for kNN (Down):'
-print classification_report(testAnswers == -1, knnLearner.predict_proba(testFeatures)[:, 0] > 0.3, target_names=['Don\'t know', 'Will go Down'])
+print classification_report(testAnswers == 0, knnLearner.predict_proba(testFeatures)[:, 0] > 0.3, target_names=['Don\'t know', 'Will go Down'])
