@@ -102,7 +102,7 @@ def findSVM():
     svmBestParam = [0]
     #Finding for SVM:
     print 'Finding for SVM...'
-    kernels = ['rbf'] #['linear', 'rbf', 'poly', 'sigmoid']
+    kernels = ['linear', 'sigmoid', 'rbf'] #['linear', 'rbf', 'poly', 'sigmoid']
     regul = [pow(5, x) for x in xrange(2, 6)]
     degree = xrange(1, 15)
     for k in kernels:

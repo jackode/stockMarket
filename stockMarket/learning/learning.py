@@ -110,7 +110,7 @@ cvAnswers = np.asarray(cvAnswers)
 
 lrLearner = LogisticRegression(penalty='l2', dual=False, C=1.0)
 #svmLearner = svm.SVC(C=1.0, kernel="linear", gamma=0.0, probability=True)
-svmLearner = svm.SVC(C=1.0, kernel="poly", degree=5, gamma=0.0, probability=True)
+svmLearner = svm.SVC(C=250.0, kernel="rbf", probability=True)
 knnLearner = neighbors.KNeighborsClassifier(n_neighbors=350, algorithm='auto')
 
 start = 10
