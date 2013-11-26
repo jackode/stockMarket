@@ -159,10 +159,18 @@ testIds = []
 cvIds = []
 print 'Generating Cross-Validation and Test sets...'
 for i in xrange(testLen):
-    testIds.append(randint(260, featLen - 1))
+    while True:
+        rand = randint(0, featLen - 261)
+        if not rand in testIds:
+            testIds.append(rand)
+            break
 
 for i in xrange(cvLen):
-    cvIds.append(randint(260, featLen - 1))
+    while True:
+        rand = randint(0, featLen - 261)
+        if not rand in testIds and not rand in cvIds:
+            cvIds.append(rand)
+            break
 
 testIds = np.sort(testIds)
 cvIds = np.sort(cvIds)

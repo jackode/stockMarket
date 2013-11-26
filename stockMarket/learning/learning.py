@@ -48,10 +48,10 @@ finalAnswers = []
 testAnswers = []
 cvAnswers = []
 for i in xrange(0, len(allFeatures)):
-    if i+260 in cvIds:
+    if i in cvIds:
         cvAnswers.append(allAnswers[i])
         cvFeatures.append(allFeatures[i])
-    elif i+260 in testIds:
+    elif i in testIds:
     # if i+260 in testIds:
         testAnswers.append(allAnswers[i])
         testFeatures.append(allFeatures[i])
@@ -190,6 +190,8 @@ print classification_report(testAnswers == 1, knnLearner.predict_proba(testFeatu
 print 'Report for kNN (Down):'
 print classification_report(testAnswers == 0, knnLearner.predict_proba(testFeatures)[:, 0] > 0.3, target_names=['Don\'t know', 'Will go Down'])
 
+#Exporting as files
+print 'Exporting as files...'
 file = open('lrPrecDown', 'wb')
 pi.dump(lrPrecDown, file)
 file = open('lrRecallDown', 'wb')
