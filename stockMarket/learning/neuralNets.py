@@ -79,3 +79,4 @@ finalAnswers = shuffled[:, -1]
 # testFeatures = pca.transform(testFeatures)
 # print 'With ' + str(n_components) + ' components we have a conserved variance of ' + str(pca.explained_variance_ratio_)
 
+neuralNet = buildNetwork(2, 3, 1)
