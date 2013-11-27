@@ -77,6 +77,16 @@ finalFeatures = selLda.fit_transform(finalFeatures, finalAnswers)
 cvFeatures = selLda.transform(cvFeatures)
 testFeatures = selLda.transform(testFeatures)
 
+#Applying PCA
+# print 'Applying PCA...'
+# n_components=1000
+# pca = decomposition.PCA(n_components=n_components)
+# finalFeatures = pca.fit_transform(finalFeatures)
+# cvFeatures = pca.transform(cvFeatures)
+# testFeatures = pca.transform(testFeatures)
+# print 'With ' + str(n_components) + ' components we have a conserved variance of ' + str(sp.sum(pca.explained_variance_ratio_))
+
+
 ###################
 # Finding the best parameters:
 ###################
@@ -85,8 +95,8 @@ def findLR():
     lrBestParam = [0]
     #Finding for LR:
     print 'Finding best parameters for Linear Regression...'
-    penalty = ['l2'] #['l1', 'l2']
-    dual = [False, True] #[False]
+    penalty = ['l1', 'l2'] #['l2'] #
+    dual = [False] #[False, True] #
     regul = [pow(10, x) for x in xrange(-6, 6)]
     for pen in penalty:
         for d in dual:
@@ -102,13 +112,14 @@ def findSVM():
     svmBestParam = [0]
     #Finding for SVM:
     print 'Finding for SVM...'
-    kernels = ['linear', 'sigmoid', 'rbf'] #['linear', 'rbf', 'poly', 'sigmoid']
-    regul = [pow(5, x) for x in xrange(2, 6)]
+    kernels = ['poly'] #['linear', 'rbf', 'poly', 'sigmoid'] #['sigmoid', 'rbf', 'linear'] #
+    regul = [pow(5, x) for x in xrange(0, 6)]
     degree = xrange(1, 15)
     for k in kernels:
         for reg in regul:
             if k == 'poly':
                 for deg in degree:
+                    print k, ':', reg, ':', deg
                     svmLearner = svm.SVC(C=reg, kernel=k, degree=deg)
                     svmLearner.fit(finalFeatures, finalAnswers)
                     score = svmLearner.score(cvFeatures, cvAnswers)
@@ -127,7 +138,7 @@ def findkNN():
     #Finding for kNN:
     print 'Finding for kNN...'
     nb_neighboors = xrange(50 , 500, 50)
-    algos = ['ball_tree', 'kd_tree', 'brute']
+    algos = ['auto', 'ball_tree', 'kd_tree', 'brute']
     for alg in algos:
         for nb in nb_neighboors:
             knnLearner = neighbors.KNeighborsClassifier(n_neighbors=nb, algorithm=alg)

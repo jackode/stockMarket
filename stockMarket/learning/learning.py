@@ -95,7 +95,7 @@ def applyPCA(finalFeatures, cvFeatures, testFeatures, n_components=2000):
     finalFeatures = pca.fit_transform(finalFeatures)
     cvFeatures = pca.transform(cvFeatures)
     testFeatures = pca.transform(testFeatures)
-    print 'With ' + str(n_components) + ' components we have a conserved variance of ' + str(np.average(pca.explained_variance_ratio_))
+    print 'With ' + str(n_components) + ' components we have a conserved variance of ' + str(sp.sum(pca.explained_variance_ratio_))
     return (finalFeatures, cvFeatures, testFeatures)
 
 
@@ -125,7 +125,7 @@ def findTrainerError(trainer, trainer_name, finalFeatures, finalAnswers, testFea
     return (indices, trainingError, testingError)
 
 #Finding Errors (in parallel):
-def runParallelFindindErrors(lrLearner, svmLearner, knnLearner):
+def findTrainerErrorParallel(lrLearner, svmLearner, knnLearner):
     manager = Manager()
     lrTrainingError, lrTestingError, lrIndices = manager.list(), manager.list(), manager.list()
     svmTrainingError, svmTestingError, svmIndices = manager.list(), manager.list(), manager.list()
@@ -161,11 +161,51 @@ def runParallelFindindErrors(lrLearner, svmLearner, knnLearner):
     return (lrLearner, svmLearner, knnLearner, lrTrainingError, lrTestingError, lrIndices, svmTrainingError, svmTestingError, svmIndices, knnTrainingError, knnTestingError, knnIndices)
 
 #Only train and get score of algorithm:
-def trainerLearnScore(trainer, trainer_name, finalFeatures, finalAnswers, testFeatures, testAnswers):
+def trainerLearnScore(trainer, trainer_name, finalFeatures, finalAnswers, testFeatures, testAnswers, score):
     print 'Training ' + trainer_name + '...'
+    ns = trainer
+    trainer = ns.learner
     trainer.fit(finalFeatures, finalAnswers)
     score = trainer.score(testFeatures, testAnswers)
-    print 'Final ' + trainer_name + ' score is ' + score
+    print 'Final ' + trainer_name + ' score is ' + str(score)
+    ns.learner = trainer
+    trainer = ns
+    return trainer
+
+#Only train and get score of algorithm (Parallel):
+def trainerLearnScoreParallel(lrLearner, svmLearner, knnLearner):
+    manager = Manager()
+
+    lrScore, svmScore, knnScore = manager.Value('d', 0.0), manager.Value('d', 0.0), manager.Value('d', 0.0)
+
+    temp = manager.Namespace()
+    temp.learner = lrLearner
+    lrLearner = temp
+
+    temp = manager.Namespace()
+    temp.learner = svmLearner
+    svmLearner = temp
+
+    temp = manager.Namespace()
+    temp.learner = knnLearner
+    knnLearner = temp
+
+    lrP = Process(target=trainerLearnScore, args=(lrLearner, 'LogReg', finalFeatures, finalAnswers, testFeatures, testAnswers, lrScore))
+    svmP = Process(target=trainerLearnScore, args=(svmLearner, 'SVM', finalFeatures, finalAnswers, testFeatures, testAnswers, svmScore))
+    knnP = Process(target=trainerLearnScore, args=(knnLearner, 'kNN', finalFeatures, finalAnswers, testFeatures, testAnswers, knnScore))
+
+    lrP.start()
+    svmP.start()
+    knnP.start()
+
+    lrP.join()
+    svmP.join()
+    knnP.join()
+
+    lrLearner = lrLearner.learner
+    svmLearner = svmLearner.learner
+    knnLearner = knnLearner.learner
+    return (lrLearner, svmLearner, knnLearner, lrScore, svmScore, knnScore)
 
 #Plot Training and Post Errors
 def plotErrors(trainer_name, indices, trainError, testError):
@@ -238,6 +278,11 @@ def exportResults(lrPrecDown, lrRecDown, svmPrecDown, svmRecDown, knnPrecDown, k
     pi.dump(cvAnswers, file)
 
 
+#Executing plot files to have additional functions
+curr_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
+execfile(curr_dir + '/../Scripts/plot.py')
+
+#Build and Work on features
 dayFeatures, cvIds, testIds, allAnswers = openFiles()
 dayFeatures = scaleFeatures(dayFeatures)
 allFeatures = buildFeaturesInputs(dayFeatures)
@@ -255,21 +300,25 @@ cvFeatures = np.asarray(cvFeatures)
 cvAnswers = np.asarray(cvAnswers)
 
 #Creation of the learners:
-lrLearner = LogisticRegression(penalty='l2', dual=False, C=1.0)
-svmLearner = svm.SVC(C=250.0, kernel="rbf", probability=True)
-knnLearner = neighbors.KNeighborsClassifier(n_neighbors=350, algorithm='auto')
-
-#Finding Errors (in parallel):
-lrLearner, svmLearner, knnLearner, lrTrainingError, lrTestingError, lrIndices, svmTrainingError, svmTestingError, svmIndices, knnTrainingError, knnTestingError, knnIndices =  runParallelFindindErrors(lrLearner, svmLearner, knnLearner)
+lrLearner = LogisticRegression(penalty='l2', dual=False, C=10000.0)
+svmLearner = svm.SVC(C=5, kernel='poly', degree=4, probability=True)
+knnLearner = neighbors.KNeighborsClassifier(n_neighbors=250, algorithm='auto')
 
 # Finding Training and Test Errors (Sequential)
 # lrTrainingError, lrTestingError, lrIndices = findTrainerError(lrLearner, 'LogReg', finalFeatures, finalAnswers, testFeatures, testAnswers)
 # svmTrainingError, svmTestingError, svmIndices = findTrainerError(svmLearner, 'SVM', finalFeatures, finalAnswers, testFeatures, testAnswers)
 # knnTrainingError, knnTestingError, knnIndices = findTrainerError(knnLearner, 'kNN', finalFeatures, finalAnswers, testFeatures, testAnswers)
 
-#Executing plot files to have additional functions
-curr_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
-execfile(curr_dir + '/../Scripts/plot.py')
+#Finding Errors (in parallel):
+lrLearner, svmLearner, knnLearner, lrTrainingError, lrTestingError, lrIndices, svmTrainingError, svmTestingError, svmIndices, knnTrainingError, knnTestingError, knnIndices =  findTrainerErrorParallel(lrLearner, svmLearner, knnLearner)
+
+#Finding Score Only (Sequential):
+# lrLearner = trainerLearnScore(lrLearner, 'LogReg', finalFeatures, finalAnswers, testFeatures, testAnswers)
+# svmLearner = trainerLearnScore(svmLearner, 'SVM', finalFeatures, finalAnswers, testFeatures, testAnswers)
+# knnLearner = trainerLearnScore(knnLearner, 'kNN', finalFeatures, finalAnswers, testFeatures, testAnswers)
+
+#Find Score Only (Parallel):
+# lrLearner, svmLearner, knnLearner, lrScore, svmScore, knnScore = trainerLearnScoreParallel(lrLearner, svmLearner, knnLearner)
 
 #Plot and get Precision and Recall:
 lrPrecDown, lrRecDown, lrThrDown, lrPrecUp, lrRecUp, lrThrUp = plotPrecisionRecall(lrLearner, 'LogReg', testFeatures, testAnswers)
@@ -277,9 +326,9 @@ svmPrecDown, svmRecDown, svmThrDown, svmPrecUp, svmRecUp, svmThrUp = plotPrecisi
 knnPrecDown, knnRecDown, knnThrDown, knnPrecUp, knnRecUp, knnThrUp = plotPrecisionRecall(knnLearner, 'kNN', testFeatures, testAnswers)
 
 #Print Classification Report:
-# printClassReport(lrLearner, 'LogReg', testAnswers, testFeatures, 0.54, 0.008)
-# printClassReport(svmLearner, 'SVM', testAnswers, testFeatures, 0.54, 0.05)
-# printClassReport(knnLearner, 'kNN', testAnswers, testFeatures, 0.51, 0.3)
+printClassReport(lrLearner, 'LogReg', testAnswers, testFeatures, 0.54, 0.008)
+printClassReport(svmLearner, 'SVM', testAnswers, testFeatures, 0.54, 0.05)
+printClassReport(knnLearner, 'kNN', testAnswers, testFeatures, 0.51, 0.3)
 
 #Exporting values in files
 exportResults(lrPrecDown, lrRecDown, svmPrecDown, svmRecDown, knnPrecDown, knnRecDown, lrRecUp, lrPrecUp, svmRecUp, svmPrecUp, knnRecUp, knnPrecUp, lrIndices, lrTrainingError, lrTestingError, svmIndices, svmTrainingError, svmTestingError, knnIndices, knnTrainingError, knnTestingError, cvAnswers)

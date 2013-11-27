@@ -8,12 +8,35 @@ import numpy as np
 
 curr_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
 execfile(curr_dir + '/../Scripts/plot.py')
+execfile(curr_dir + '/learning/learning.py')
 
 def buildSet():
     execfile(curr_dir + '/learning/buildSets.py')
 
 def learnFromSet():
-    execfile(curr_dir + '/learning/learning.py')
+    #Build and Work on features
+    dayFeatures, cvIds, testIds, allAnswers = openFiles()
+    dayFeatures = scaleFeatures(dayFeatures)
+    allFeatures = buildFeaturesInputs(dayFeatures)
+    finalFeatures, finalAnswers, cvFeatures, cvAnswers, testFeatures, testAnswers = buildSets(allFeatures, allAnswers)
+    finalFeatures, finalAnswers = shuffleSet(finalFeatures, finalAnswers)
+    # finalFeatures, cvFeatures, testFeatures = applyLDA(finalFeatures, finalAnswers, cvFeatures, testFeatures, 2000)
+    finalFeatures, cvFeatures, testFeatures = applyPCA(finalFeatures, cvFeatures, testFeatures, n_components=2000)
+
+    #Convert features and answers into arrays:
+    testFeatures = np.asarray(testFeatures)
+    testAnswers = np.asarray(testAnswers)
+    finalFeatures = np.asarray(finalFeatures)
+    finalAnswers = np.asarray(finalAnswers)
+    cvFeatures = np.asarray(cvFeatures)
+    cvAnswers = np.asarray(cvAnswers)
+
+    #Creation of the learners:
+    lrLearner = LogisticRegression(penalty='l2', dual=False, C=10000.0)
+    svmLearner = svm.SVC(C=5, kernel='poly', degree=4, probability=True)
+    knnLearner = neighbors.KNeighborsClassifier(n_neighbors=250, algorithm='auto')
+
+    return findTrainerErrorParallel(lrLearner, svmLearner, knnLearner)
 
 
 
@@ -84,7 +107,7 @@ nb_runs = 20
 
 for i in xrange(1, nb_runs):
     buildSet()
-    learnFromSet()
+    lrLearner, svmLearner, knnLearner, lrTrainingError, lrTestingError, lrIndices, svmTrainingError, svmTestingError, svmIndices, knnTrainingError, knnTestingError, knnIndices = learnFromSet()
 
     # file = open('lrPrecDown', 'rb')
     # lrPrecDown = np.asarray(pi.load(file))
@@ -134,40 +157,40 @@ for i in xrange(1, nb_runs):
     # knnPrecUp = np.asarray(pi.load(file))
     # aveknnPrecUp += knnPrecUp
 
-    file = open('lrIndices', 'rb')
-    lrIndices = np.asarray(pi.load(file))
+    # file = open('lrIndices', 'rb')
+    # lrIndices = np.asarray(pi.load(file))
     avelrIndices += lrIndices
 
-    file = open('lrTrainingError', 'rb')
-    lrTrainingError = np.asarray(pi.load(file))
+    # file = open('lrTrainingError', 'rb')
+    # lrTrainingError = np.asarray(pi.load(file))
     avelrTrainingError += lrTrainingError
 
-    file = open('lrTestingError', 'rb')
-    lrTestingError = np.asarray(pi.load(file))
+    # file = open('lrTestingError', 'rb')
+    # lrTestingError = np.asarray(pi.load(file))
     avelrTestingError += lrTestingError
 
-    file = open('svmIndices', 'rb')
-    svmIndices = np.asarray(pi.load(file))
+    # file = open('svmIndices', 'rb')
+    # svmIndices = np.asarray(pi.load(file))
     avesvmIndices += svmIndices
 
-    file = open('svmTrainingError', 'rb')
-    svmTrainingError = np.asarray(pi.load(file))
+    # file = open('svmTrainingError', 'rb')
+    # svmTrainingError = np.asarray(pi.load(file))
     avesvmTrainingError += svmTrainingError
 
-    file = open('svmTestingError', 'rb')
-    svmTestingError = np.asarray(pi.load(file))
+    # file = open('svmTestingError', 'rb')
+    # svmTestingError = np.asarray(pi.load(file))
     avesvmTestingError += svmTestingError
 
-    file = open('knnIndices', 'rb')
-    knnIndices = np.asarray(pi.load(file))
+    # file = open('knnIndices', 'rb')
+    # knnIndices = np.asarray(pi.load(file))
     aveknnIndices += knnIndices
 
-    file = open('knnTrainingError', 'rb')
-    knnTrainingError = np.asarray(pi.load(file))
+    # file = open('knnTrainingError', 'rb')
+    # knnTrainingError = np.asarray(pi.load(file))
     aveknnTrainingError += knnTrainingError
 
-    file = open('knnTestingError', 'rb')
-    knnTestingError = np.asarray(pi.load(file))
+    # file = open('knnTestingError', 'rb')
+    # knnTestingError = np.asarray(pi.load(file))
     aveknnTestingError += knnTestingError
 
 
