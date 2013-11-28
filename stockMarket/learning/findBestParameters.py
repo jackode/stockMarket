@@ -113,8 +113,8 @@ def findSVM():
     #Finding for SVM:
     print 'Finding for SVM...'
     kernels = ['poly'] #['linear', 'rbf', 'poly', 'sigmoid'] #['sigmoid', 'rbf', 'linear'] #
-    regul = [pow(5, x) for x in xrange(0, 6)]
-    degree = xrange(1, 15)
+    regul = [pow(5, x) for x in xrange(0, 4)]
+    degree = xrange(1, 10)
     for k in kernels:
         for reg in regul:
             if k == 'poly':
