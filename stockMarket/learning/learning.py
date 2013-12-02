@@ -284,59 +284,59 @@ def exportResults(lrPrecDown, lrRecDown, svmPrecDown, svmRecDown, knnPrecDown, k
     pi.dump(cvAnswers, file)
 
 
-# #Build and Work on features
-# dayFeatures, cvIds, testIds, allAnswers = openFiles()
-# dayFeatures = scaleFeatures(dayFeatures)
-# allFeatures = buildFeaturesInputs(dayFeatures)
-# finalFeatures, finalAnswers, cvFeatures, cvAnswers, testFeatures, testAnswers = buildSets(allFeatures, allAnswers, cvIds, testIds)
-# finalFeatures, finalAnswers = shuffleSet(finalFeatures, finalAnswers)
-# # finalFeatures, cvFeatures, testFeatures = applyLDA(finalFeatures, finalAnswers, cvFeatures, testFeatures, 2000)
-# finalFeatures, cvFeatures, testFeatures = applyPCA(finalFeatures, cvFeatures, testFeatures, n_components=2000)
+#Build and Work on features
+dayFeatures, cvIds, testIds, allAnswers = openFiles()
+dayFeatures = scaleFeatures(dayFeatures)
+allFeatures = buildFeaturesInputs(dayFeatures)
+finalFeatures, finalAnswers, cvFeatures, cvAnswers, testFeatures, testAnswers = buildSets(allFeatures, allAnswers, cvIds, testIds)
+finalFeatures, finalAnswers = shuffleSet(finalFeatures, finalAnswers)
+# finalFeatures, cvFeatures, testFeatures = applyLDA(finalFeatures, finalAnswers, cvFeatures, testFeatures, 2000)
+finalFeatures, cvFeatures, testFeatures = applyPCA(finalFeatures, cvFeatures, testFeatures, n_components=3)
 
-# #Convert features and answers into arrays:
-# testFeatures = np.asarray(testFeatures)
-# testAnswers = np.asarray(testAnswers)
-# finalFeatures = np.asarray(finalFeatures)
-# finalAnswers = np.asarray(finalAnswers)
-# cvFeatures = np.asarray(cvFeatures)
-# cvAnswers = np.asarray(cvAnswers)
+#Convert features and answers into arrays:
+testFeatures = np.asarray(testFeatures)
+testAnswers = np.asarray(testAnswers)
+finalFeatures = np.asarray(finalFeatures)
+finalAnswers = np.asarray(finalAnswers)
+cvFeatures = np.asarray(cvFeatures)
+cvAnswers = np.asarray(cvAnswers)
 
-# #Creation of the learners:
-# lrLearner = LogisticRegression(penalty='l2', dual=False, C=10000.0)
-# svmLearner = svm.SVC(C=5, kernel='poly', degree=4, probability=True)
-# knnLearner = neighbors.KNeighborsClassifier(n_neighbors=250, algorithm='auto')
+#Creation of the learners:
+lrLearner = LogisticRegression(penalty='l2', dual=False, C=10000.0)
+svmLearner = svm.SVC(C=5, kernel='poly', degree=4, probability=True)
+knnLearner = neighbors.KNeighborsClassifier(n_neighbors=250, algorithm='auto')
 
-# # Finding Training and Test Errors (Sequential)
-# # lrTrainingError, lrTestingError, lrIndices = findTrainerError(lrLearner, 'LogReg', finalFeatures, finalAnswers, testFeatures, testAnswers)
-# # svmTrainingError, svmTestingError, svmIndices = findTrainerError(svmLearner, 'SVM', finalFeatures, finalAnswers, testFeatures, testAnswers)
-# # knnTrainingError, knnTestingError, knnIndices = findTrainerError(knnLearner, 'kNN', finalFeatures, finalAnswers, testFeatures, testAnswers)
+# Finding Training and Test Errors (Sequential)
+# lrTrainingError, lrTestingError, lrIndices = findTrainerError(lrLearner, 'LogReg', finalFeatures, finalAnswers, testFeatures, testAnswers)
+# svmTrainingError, svmTestingError, svmIndices = findTrainerError(svmLearner, 'SVM', finalFeatures, finalAnswers, testFeatures, testAnswers)
+# knnTrainingError, knnTestingError, knnIndices = findTrainerError(knnLearner, 'kNN', finalFeatures, finalAnswers, testFeatures, testAnswers)
 
-# #Finding Errors (in parallel):
-# lrLearner, svmLearner, knnLearner, lrTrainingError, lrTestingError, lrIndices, svmTrainingError, svmTestingError, svmIndices, knnTrainingError, knnTestingError, knnIndices =  findTrainerErrorParallel(lrLearner, svmLearner, knnLearner, finalFeatures, finalAnswers, testFeatures, testAnswers)
+#Finding Errors (in parallel):
+lrLearner, svmLearner, knnLearner, lrTrainingError, lrTestingError, lrIndices, svmTrainingError, svmTestingError, svmIndices, knnTrainingError, knnTestingError, knnIndices =  findTrainerErrorParallel(lrLearner, svmLearner, knnLearner, finalFeatures, finalAnswers, testFeatures, testAnswers)
 
-# #Finding Score Only (Sequential):
-# # lrLearner = trainerLearnScore(lrLearner, 'LogReg', finalFeatures, finalAnswers, testFeatures, testAnswers)
-# # svmLearner = trainerLearnScore(svmLearner, 'SVM', finalFeatures, finalAnswers, testFeatures, testAnswers)
-# # knnLearner = trainerLearnScore(knnLearner, 'kNN', finalFeatures, finalAnswers, testFeatures, testAnswers)
+#Finding Score Only (Sequential):
+# lrLearner = trainerLearnScore(lrLearner, 'LogReg', finalFeatures, finalAnswers, testFeatures, testAnswers)
+# svmLearner = trainerLearnScore(svmLearner, 'SVM', finalFeatures, finalAnswers, testFeatures, testAnswers)
+# knnLearner = trainerLearnScore(knnLearner, 'kNN', finalFeatures, finalAnswers, testFeatures, testAnswers)
 
-# #Find Score Only (Parallel):
-# # lrLearner, svmLearner, knnLearner, lrScore, svmScore, knnScore = trainerLearnScoreParallel(lrLearner, svmLearner, knnLearner)
+#Find Score Only (Parallel):
+# lrLearner, svmLearner, knnLearner, lrScore, svmScore, knnScore = trainerLearnScoreParallel(lrLearner, svmLearner, knnLearner)
 
-# #Plot and get Precision and Recall:
-# lrPrecDown, lrRecDown, lrThrDown, lrPrecUp, lrRecUp, lrThrUp = plotPrecisionRecall(lrLearner, 'LogReg', testFeatures, testAnswers)
-# svmPrecDown, svmRecDown, svmThrDown, svmPrecUp, svmRecUp, svmThrUp = plotPrecisionRecall(svmLearner, 'SVM', testFeatures, testAnswers)
-# knnPrecDown, knnRecDown, knnThrDown, knnPrecUp, knnRecUp, knnThrUp = plotPrecisionRecall(knnLearner, 'kNN', testFeatures, testAnswers)
+#Plot and get Precision and Recall:
+lrPrecDown, lrRecDown, lrThrDown, lrPrecUp, lrRecUp, lrThrUp = plotPrecisionRecall(lrLearner, 'LogReg', testFeatures, testAnswers)
+svmPrecDown, svmRecDown, svmThrDown, svmPrecUp, svmRecUp, svmThrUp = plotPrecisionRecall(svmLearner, 'SVM', testFeatures, testAnswers)
+knnPrecDown, knnRecDown, knnThrDown, knnPrecUp, knnRecUp, knnThrUp = plotPrecisionRecall(knnLearner, 'kNN', testFeatures, testAnswers)
 
-# #Plotting Errors:
-# plotErrors('LogReg', lrIndices, lrTrainingError, lrTestingError)
-# plotErrors('SVM', svmIndices, svmTrainingError, svmTestingError)
-# plotErrors('kNN', knnIndices, knnTrainingError, knnTestingError)
+#Plotting Errors:
+plotErrors('LogReg', lrIndices, lrTrainingError, lrTestingError)
+plotErrors('SVM', svmIndices, svmTrainingError, svmTestingError)
+plotErrors('kNN', knnIndices, knnTrainingError, knnTestingError)
 
-# #Print Classification Report:
-# printClassReport(lrLearner, 'LogReg', testAnswers, testFeatures, 0.54, 0.008)
-# printClassReport(svmLearner, 'SVM', testAnswers, testFeatures, 0.54, 0.05)
-# printClassReport(knnLearner, 'kNN', testAnswers, testFeatures, 0.51, 0.3)
+#Print Classification Report:
+printClassReport(lrLearner, 'LogReg', testAnswers, testFeatures, 0.54, 0.008)
+printClassReport(svmLearner, 'SVM', testAnswers, testFeatures, 0.54, 0.05)
+printClassReport(knnLearner, 'kNN', testAnswers, testFeatures, 0.51, 0.3)
 
-# #Exporting values in files
-# exportResults(lrPrecDown, lrRecDown, svmPrecDown, svmRecDown, knnPrecDown, knnRecDown, lrRecUp, lrPrecUp, svmRecUp, svmPrecUp, knnRecUp, knnPrecUp, lrIndices, lrTrainingError, lrTestingError, svmIndices, svmTrainingError, svmTestingError, knnIndices, knnTrainingError, knnTestingError, cvAnswers)
+#Exporting values in files
+exportResults(lrPrecDown, lrRecDown, svmPrecDown, svmRecDown, knnPrecDown, knnRecDown, lrRecUp, lrPrecUp, svmRecUp, svmPrecUp, knnRecUp, knnPrecUp, lrIndices, lrTrainingError, lrTestingError, svmIndices, svmTrainingError, svmTestingError, knnIndices, knnTrainingError, knnTestingError, cvAnswers)
 

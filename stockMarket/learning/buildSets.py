@@ -181,12 +181,12 @@ finalAnswers = []
 testAnswers = []
 cvAnswers = []
 allAnswers = []
-prediction_length = 14
+prediction_length = 15
 for i in xrange(260, len(dayFeatures)):
     curr = TyroonStock.objects.get(
         day=dayFeatures[i, dayStock], month=dayFeatures[i, monthStock], year=dayFeatures[i, yearStock])
     old = TyroonStock.objects.get(id=curr.id + prediction_length)
-    answer = 1 if curr.close > old.close else 0 #if curr.close < old.close else 0
+    answer = 1 if curr.close >= old.close else 0 #if curr.close < old.close else 0
     allAnswers.append(answer)
     if i in cvIds:
         cvAnswers.append(answer)
@@ -194,8 +194,6 @@ for i in xrange(260, len(dayFeatures)):
         testAnswers.append(answer)
     else:
         finalAnswers.append(answer)
-
-
 
 
 # Saves dayFeatures in file (Should have length of 1135)
