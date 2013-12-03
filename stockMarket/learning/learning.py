@@ -291,7 +291,7 @@ allFeatures = buildFeaturesInputs(dayFeatures)
 finalFeatures, finalAnswers, cvFeatures, cvAnswers, testFeatures, testAnswers = buildSets(allFeatures, allAnswers, cvIds, testIds)
 finalFeatures, finalAnswers = shuffleSet(finalFeatures, finalAnswers)
 # finalFeatures, cvFeatures, testFeatures = applyLDA(finalFeatures, finalAnswers, cvFeatures, testFeatures, 2000)
-finalFeatures, cvFeatures, testFeatures = applyPCA(finalFeatures, cvFeatures, testFeatures, n_components=3)
+finalFeatures, cvFeatures, testFeatures = applyPCA(finalFeatures, cvFeatures, testFeatures, n_components=1000)
 
 #Convert features and answers into arrays:
 testFeatures = np.asarray(testFeatures)
@@ -323,20 +323,20 @@ lrLearner, svmLearner, knnLearner, lrTrainingError, lrTestingError, lrIndices, s
 # lrLearner, svmLearner, knnLearner, lrScore, svmScore, knnScore = trainerLearnScoreParallel(lrLearner, svmLearner, knnLearner)
 
 #Plot and get Precision and Recall:
-lrPrecDown, lrRecDown, lrThrDown, lrPrecUp, lrRecUp, lrThrUp = plotPrecisionRecall(lrLearner, 'LogReg', testFeatures, testAnswers)
-svmPrecDown, svmRecDown, svmThrDown, svmPrecUp, svmRecUp, svmThrUp = plotPrecisionRecall(svmLearner, 'SVM', testFeatures, testAnswers)
-knnPrecDown, knnRecDown, knnThrDown, knnPrecUp, knnRecUp, knnThrUp = plotPrecisionRecall(knnLearner, 'kNN', testFeatures, testAnswers)
+# lrPrecDown, lrRecDown, lrThrDown, lrPrecUp, lrRecUp, lrThrUp = plotPrecisionRecall(lrLearner, 'LogReg', testFeatures, testAnswers)
+# svmPrecDown, svmRecDown, svmThrDown, svmPrecUp, svmRecUp, svmThrUp = plotPrecisionRecall(svmLearner, 'SVM', testFeatures, testAnswers)
+# knnPrecDown, knnRecDown, knnThrDown, knnPrecUp, knnRecUp, knnThrUp = plotPrecisionRecall(knnLearner, 'kNN', testFeatures, testAnswers)
 
-#Plotting Errors:
-plotErrors('LogReg', lrIndices, lrTrainingError, lrTestingError)
-plotErrors('SVM', svmIndices, svmTrainingError, svmTestingError)
-plotErrors('kNN', knnIndices, knnTrainingError, knnTestingError)
+# #Plotting Errors:
+# plotErrors('LogReg', lrIndices, lrTrainingError, lrTestingError)
+# plotErrors('SVM', svmIndices, svmTrainingError, svmTestingError)
+# plotErrors('kNN', knnIndices, knnTrainingError, knnTestingError)
 
-#Print Classification Report:
-printClassReport(lrLearner, 'LogReg', testAnswers, testFeatures, 0.54, 0.008)
-printClassReport(svmLearner, 'SVM', testAnswers, testFeatures, 0.54, 0.05)
-printClassReport(knnLearner, 'kNN', testAnswers, testFeatures, 0.51, 0.3)
+# #Print Classification Report:
+# printClassReport(lrLearner, 'LogReg', testAnswers, testFeatures, 0.54, 0.008)
+# printClassReport(svmLearner, 'SVM', testAnswers, testFeatures, 0.54, 0.05)
+# printClassReport(knnLearner, 'kNN', testAnswers, testFeatures, 0.51, 0.3)
 
-#Exporting values in files
-exportResults(lrPrecDown, lrRecDown, svmPrecDown, svmRecDown, knnPrecDown, knnRecDown, lrRecUp, lrPrecUp, svmRecUp, svmPrecUp, knnRecUp, knnPrecUp, lrIndices, lrTrainingError, lrTestingError, svmIndices, svmTrainingError, svmTestingError, knnIndices, knnTrainingError, knnTestingError, cvAnswers)
+# #Exporting values in files
+# exportResults(lrPrecDown, lrRecDown, svmPrecDown, svmRecDown, knnPrecDown, knnRecDown, lrRecUp, lrPrecUp, svmRecUp, svmPrecUp, knnRecUp, knnPrecUp, lrIndices, lrTrainingError, lrTestingError, svmIndices, svmTrainingError, svmTestingError, knnIndices, knnTrainingError, knnTestingError, cvAnswers)
 

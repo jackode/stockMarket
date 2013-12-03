@@ -297,8 +297,8 @@ def learnFromSet():
     allFeatures = buildFeaturesInputs(dayFeatures)
     finalFeatures, finalAnswers, cvFeatures, cvAnswers, testFeatures, testAnswers = buildSets(allFeatures, allAnswers, cvIds, testIds)
     finalFeatures, finalAnswers = shuffleSet(finalFeatures, finalAnswers)
-    # finalFeatures, cvFeatures, testFeatures = applyLDA(finalFeatures, finalAnswers, cvFeatures, testFeatures, 2000)
-    finalFeatures, cvFeatures, testFeatures = applyPCA(finalFeatures, cvFeatures, testFeatures, n_components=2000)
+    finalFeatures, cvFeatures, testFeatures = applyLDA(finalFeatures, finalAnswers, cvFeatures, testFeatures, 2000)
+    # finalFeatures, cvFeatures, testFeatures = applyPCA(finalFeatures, cvFeatures, testFeatures, n_components=1000)
 
     #Convert features and answers into arrays:
     testFeatures = np.asarray(testFeatures)
@@ -309,9 +309,9 @@ def learnFromSet():
     cvAnswers = np.asarray(cvAnswers)
 
     #Creation of the learners:
-    lrLearner = LogisticRegression(penalty='l2', dual=False, C=10000.0)
+    lrLearner = LogisticRegression(penalty='l1', dual=False, C=1000.0)
     svmLearner = svm.SVC(C=5, kernel='poly', degree=4, probability=True)
-    knnLearner = neighbors.KNeighborsClassifier(n_neighbors=250, algorithm='auto')
+    knnLearner = neighbors.KNeighborsClassifier(n_neighbors=350, algorithm='auto')
 
     return findTrainerErrorParallel(lrLearner, svmLearner, knnLearner, finalFeatures, finalAnswers, testFeatures, testAnswers)
 
@@ -380,7 +380,7 @@ aveknnTrainingError = np.asarray(pi.load(file))
 file = open('knnTestingError', 'rb')
 aveknnTestingError = np.asarray(pi.load(file))
 
-nb_runs = 15
+nb_runs = 18
 
 for i in xrange(1, nb_runs):
     print i
@@ -505,6 +505,6 @@ aveknnTestingError = aveknnTestingError / nb_runs
 # plotLines([[avesvmRecallUp], [avesvmPrecUp]], 'Averaged SVM: Precision vs Recall(Up)', 'Recall', 'Precision')
 # plotLines([[aveknnRecallUp], [aveknnPrecUp]], 'Averaged kNN: Precision vs Recall(Up)', 'Recall', 'Precision')
 
-plotLines([[avelrIndices, avelrIndices], [avelrTrainingError, avelrTestingError]], 'Averaged Errors:LogRegr', 'Dataset size', 'Error')
-plotLines([[avesvmIndices, avesvmIndices], [avesvmTrainingError, avesvmTestingError]], 'Averaged Errors:SVM', 'Dataset size', 'Error')
-plotLines([[aveknnIndices, aveknnIndices], [aveknnTrainingError, aveknnTestingError]], 'Averaged Errors:kNN', 'Dataset size', 'Error')
+plotLines([[avelrIndices, avelrIndices], [avelrTrainingError, avelrTestingError]], 'Averaged PCA Errors:LogRegr', 'Dataset size', 'Error')
+plotLines([[avesvmIndices, avesvmIndices], [avesvmTrainingError, avesvmTestingError]], 'Averaged PCA Errors:SVM', 'Dataset size', 'Error')
+plotLines([[aveknnIndices, aveknnIndices], [aveknnTrainingError, aveknnTestingError]], 'Averaged PCA Errors:kNN', 'Dataset size', 'Error')

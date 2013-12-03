@@ -70,21 +70,21 @@ finalFeatures = shuffled[:, :-1]
 finalAnswers = shuffled[:, -1]
 
 #Applying LDA:
-print 'Applying LDA...'
-n_components = 200
-selLda = lda.LDA(n_components=n_components)
-finalFeatures = selLda.fit_transform(finalFeatures, finalAnswers)
-cvFeatures = selLda.transform(cvFeatures)
-testFeatures = selLda.transform(testFeatures)
+# print 'Applying LDA...'
+# n_components = 200
+# selLda = lda.LDA(n_components=n_components)
+# finalFeatures = selLda.fit_transform(finalFeatures, finalAnswers)
+# cvFeatures = selLda.transform(cvFeatures)
+# testFeatures = selLda.transform(testFeatures)
 
 #Applying PCA
-# print 'Applying PCA...'
-# n_components=1000
-# pca = decomposition.PCA(n_components=n_components)
-# finalFeatures = pca.fit_transform(finalFeatures)
-# cvFeatures = pca.transform(cvFeatures)
-# testFeatures = pca.transform(testFeatures)
-# print 'With ' + str(n_components) + ' components we have a conserved variance of ' + str(sp.sum(pca.explained_variance_ratio_))
+print 'Applying PCA...'
+n_components=1000
+pca = decomposition.PCA(n_components=n_components)
+finalFeatures = pca.fit_transform(finalFeatures)
+cvFeatures = pca.transform(cvFeatures)
+testFeatures = pca.transform(testFeatures)
+print 'With ' + str(n_components) + ' components we have a conserved variance of ' + str(sp.sum(pca.explained_variance_ratio_))
 
 
 ###################
@@ -112,9 +112,9 @@ def findSVM():
     svmBestParam = [0]
     #Finding for SVM:
     print 'Finding for SVM...'
-    kernels = ['poly'] #['linear', 'rbf', 'poly', 'sigmoid'] #['sigmoid', 'rbf', 'linear'] #
+    kernels = ['linear', 'rbf', 'poly', 'sigmoid'] #['sigmoid', 'rbf', 'linear'] #['poly'] #
     regul = [pow(5, x) for x in xrange(0, 4)]
-    degree = xrange(1, 10)
+    degree = xrange(1, 5)
     for k in kernels:
         for reg in regul:
             if k == 'poly':
@@ -149,7 +149,7 @@ def findkNN():
     print 'The best parameters for kNN are: ' + str(knnBestParam)
 
 
-# thread.start_new_thread(findLR, ())
-# thread.start_new_thread(findkNN, ())
-# thread.start_new_thread(findSVM, ())
-findSVM()
+thread.start_new_thread(findLR, ())
+thread.start_new_thread(findSVM, ())
+thread.start_new_thread(findkNN, ())
+# findSVM()
