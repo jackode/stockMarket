@@ -312,7 +312,7 @@ knnLearner = neighbors.KNeighborsClassifier(n_neighbors=250, algorithm='auto')
 # knnTrainingError, knnTestingError, knnIndices = findTrainerError(knnLearner, 'kNN', finalFeatures, finalAnswers, testFeatures, testAnswers)
 
 #Finding Errors (in parallel):
-lrLearner, svmLearner, knnLearner, lrTrainingError, lrTestingError, lrIndices, svmTrainingError, svmTestingError, svmIndices, knnTrainingError, knnTestingError, knnIndices =  findTrainerErrorParallel(lrLearner, svmLearner, knnLearner, finalFeatures, finalAnswers, testFeatures, testAnswers)
+lrLearner, svmLearner, knnLearner, lrTrainingError, lrTestingError, lrIndices, svmTrainingError, svmTestingError, svmIndices, knnTrainingError, knnTestingError, knnIndices = findTrainerErrorParallel(lrLearner, svmLearner, knnLearner, finalFeatures, finalAnswers, testFeatures, testAnswers)
 
 #Finding Score Only (Sequential):
 # lrLearner = trainerLearnScore(lrLearner, 'LogReg', finalFeatures, finalAnswers, testFeatures, testAnswers)
@@ -323,9 +323,9 @@ lrLearner, svmLearner, knnLearner, lrTrainingError, lrTestingError, lrIndices, s
 # lrLearner, svmLearner, knnLearner, lrScore, svmScore, knnScore = trainerLearnScoreParallel(lrLearner, svmLearner, knnLearner)
 
 #Plot and get Precision and Recall:
-# lrPrecDown, lrRecDown, lrThrDown, lrPrecUp, lrRecUp, lrThrUp = plotPrecisionRecall(lrLearner, 'LogReg', testFeatures, testAnswers)
-# svmPrecDown, svmRecDown, svmThrDown, svmPrecUp, svmRecUp, svmThrUp = plotPrecisionRecall(svmLearner, 'SVM', testFeatures, testAnswers)
-# knnPrecDown, knnRecDown, knnThrDown, knnPrecUp, knnRecUp, knnThrUp = plotPrecisionRecall(knnLearner, 'kNN', testFeatures, testAnswers)
+lrPrecDown, lrRecDown, lrThrDown, lrPrecUp, lrRecUp, lrThrUp = plotPrecisionRecall(lrLearner, 'LogReg', testFeatures, testAnswers)
+svmPrecDown, svmRecDown, svmThrDown, svmPrecUp, svmRecUp, svmThrUp = plotPrecisionRecall(svmLearner, 'SVM', testFeatures, testAnswers)
+knnPrecDown, knnRecDown, knnThrDown, knnPrecUp, knnRecUp, knnThrUp = plotPrecisionRecall(knnLearner, 'kNN', testFeatures, testAnswers)
 
 # #Plotting Errors:
 # plotErrors('LogReg', lrIndices, lrTrainingError, lrTestingError)
@@ -338,5 +338,6 @@ lrLearner, svmLearner, knnLearner, lrTrainingError, lrTestingError, lrIndices, s
 # printClassReport(knnLearner, 'kNN', testAnswers, testFeatures, 0.51, 0.3)
 
 # #Exporting values in files
-# exportResults(lrPrecDown, lrRecDown, svmPrecDown, svmRecDown, knnPrecDown, knnRecDown, lrRecUp, lrPrecUp, svmRecUp, svmPrecUp, knnRecUp, knnPrecUp, lrIndices, lrTrainingError, lrTestingError, svmIndices, svmTrainingError, svmTestingError, knnIndices, knnTrainingError, knnTestingError, cvAnswers)
+exportResults(lrPrecDown, lrRecDown, svmPrecDown, svmRecDown, knnPrecDown, knnRecDown, lrRecUp, lrPrecUp, svmRecUp, svmPrecUp, knnRecUp, knnPrecUp, lrIndices, lrTrainingError, lrTestingError, svmIndices, svmTrainingError, svmTestingError, knnIndices, knnTrainingError, knnTestingError, cvAnswers)
+
 

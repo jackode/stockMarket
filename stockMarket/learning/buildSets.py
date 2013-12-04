@@ -47,7 +47,7 @@ for row in diana:
     temp = temp[temp[:, year] == row[yearStock]]
     if len(temp) == 0:
         continue
-    today = np.append(today, temp[0][1:5])
+    # today = np.append(today, temp[0][1:5])
 
     temp = dweather[dweather[:, day] == row[dayStock]]
     if len(temp) == 0:
@@ -58,7 +58,7 @@ for row in diana:
     temp = temp[temp[:, year] == row[yearStock]]
     if len(temp) == 0:
         continue
-    today = np.append(today, temp[0][1:5])
+    # today = np.append(today, temp[0][1:5])
 
     temp = ddweather[ddweather[:, day] == row[dayStock]]
     if len(temp) == 0:
@@ -69,7 +69,7 @@ for row in diana:
     temp = temp[temp[:, year] == row[yearStock]]
     if len(temp) == 0:
         continue
-    today = np.append(today, temp[0][1:5])
+    # today = np.append(today, temp[0][1:5])
 
     temp = features35[features35[:, dayStock] == row[dayStock]]
     if len(temp) == 0:
