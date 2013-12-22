@@ -333,9 +333,9 @@ knnPrecDown, knnRecDown, knnThrDown, knnPrecUp, knnRecUp, knnThrUp = plotPrecisi
 # plotErrors('kNN', knnIndices, knnTrainingError, knnTestingError)
 
 # #Print Classification Report:
-# printClassReport(lrLearner, 'LogReg', testAnswers, testFeatures, 0.54, 0.008)
-# printClassReport(svmLearner, 'SVM', testAnswers, testFeatures, 0.54, 0.05)
-# printClassReport(knnLearner, 'kNN', testAnswers, testFeatures, 0.51, 0.3)
+printClassReport(lrLearner, 'LogReg', testAnswers, testFeatures, 0.65, 0.65)
+printClassReport(svmLearner, 'SVM', testAnswers, testFeatures, 0.65, 0.65)
+printClassReport(knnLearner, 'kNN', testAnswers, testFeatures, 0.51, 0.65)
 
 # #Exporting values in files
 exportResults(lrPrecDown, lrRecDown, svmPrecDown, svmRecDown, knnPrecDown, knnRecDown, lrRecUp, lrPrecUp, svmRecUp, svmPrecUp, knnRecUp, knnPrecUp, lrIndices, lrTrainingError, lrTestingError, svmIndices, svmTrainingError, svmTestingError, knnIndices, knnTrainingError, knnTestingError, cvAnswers)
